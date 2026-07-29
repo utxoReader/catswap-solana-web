@@ -5,7 +5,7 @@ const TOKENS = [
   { id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 98542.36, icon: '₿' },
   { id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 3456.78, icon: 'Ξ' },
   { id: 'sol', symbol: 'SOL', name: 'Solana', price: 187.45, icon: '◎' },
-  { id: 'usdt', symbol: 'USDT', name: 'Tether', price: 1.0, icon: '₮' },
+  { id: 'usdc', symbol: 'USDC', name: 'USD Coin', price: 1.0, icon: 'U' },
   { id: 'usdc', symbol: 'USDC', name: 'USD Coin', price: 1.0, icon: '$' },
 ];
 
@@ -198,7 +198,7 @@ export const SwapPage: React.FC = () => {
           {/* To Token */}
           <TokenInput
             label="To (Estimated)"
-            balance="10000 USDT"
+            balance="10000 USDC"
             token={toToken}
             amount={toAmount}
             onTokenChange={setToToken}

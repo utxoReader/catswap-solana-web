@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { TradingPair } from "../../types";
 import { CalculatorModal } from './CalculatorModal';
 import { useUserAccount } from "../../hooks/useUserAccount";
 import { usePerp } from "../../hooks/usePerp";
 
 
-type OrderType = 'limit' | 'market';
+type OrderType = 'limit' | 'market' | 'tpsl';
 type Mode = 'open' | 'close';
 
 interface PerpsTradingFormProps {
@@ -24,6 +25,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
 }) => {
   const [mode, setMode] = useState<Mode>('open');
   const [orderType, setOrderType] = useState<OrderType>('limit');
+  const [showTpslMenu, setShowTpslMenu] = useState(false);
   const [price, setPrice] = useState('');
   const [amount, setAmount] = useState('');
   const [sliderValue, setSliderValue] = useState(0);
@@ -34,7 +36,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
   const [showCalculator, setShowCalculator] = useState(false);
 
   const baseToken = selectedPair.symbol.split('/')[0];
-  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDC';
 
   // Set default price when pair changes
   useMemo(() => {
@@ -145,12 +147,40 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
               )}
             </button>
           ))}
-          <button className="relative px-3 py-2 text-xs font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1">
-            TP/SL
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+          {/* TP/SL dropdown (OKX perp order-type list; unsupported items grayed) */}
+          <div className="relative">
+            <button
+              onClick={() => setShowTpslMenu(!showTpslMenu)}
+              className={`relative px-3 py-2 text-xs font-medium transition-colors flex items-center gap-1 ${
+                orderType === 'tpsl'
+                  ? 'text-[var(--text-primary)]'
+                  : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              TP/SL
+              <ChevronDown className={`w-3 h-3 transition-transform ${showTpslMenu ? 'rotate-180' : ''}`} />
+            </button>
+            {showTpslMenu && (
+              <div className="absolute top-full left-0 mt-1 py-1 min-w-[160px] rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-primary)] shadow-lg z-50">
+                <button
+                  onClick={() => { setOrderType('tpsl'); setShowTpslMenu(false); }}
+                  className="w-full text-left px-4 py-2 text-xs text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                >
+                  TP/SL
+                </button>
+                {['Trailing stop', 'Advanced limit', 'Trigger', 'Scaled order', 'Chase order'].map((label) => (
+                  <div key={label} className="px-4 py-2 text-xs text-[var(--text-primary)] opacity-60 cursor-not-allowed" title="即将上线">
+                    {label}
+                  </div>
+                ))}
+                {['Slicing bots', 'Iceberg', 'TWAP'].map((label) => (
+                  <div key={label} className="px-4 py-2 text-xs text-[var(--text-tertiary)] cursor-not-allowed" title="即将上线">
+                    {label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="p-3 space-y-3">
@@ -189,6 +219,40 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
             </div>
           )}
 
+          {orderType === 'tpsl' && (
+            <>
+              <div className="text-xs text-[var(--text-secondary)]">Conditional/OCO</div>
+              <button className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-primary)] text-left">
+                Conditional
+              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-[var(--text-secondary)] mb-1.5 border-b border-dashed border-[var(--text-tertiary)] w-fit">
+                    Trigger price(USDC)
+                  </label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-primary)] focus:outline-none focus:border-[var(--text-primary)] transition-colors duration-300 ease-out"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
+                    Trigger price type
+                  </label>
+                  <button className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-primary)] text-left flex justify-between items-center">
+                    Last
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+              <button className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-tertiary)] border border-[var(--border-primary)] text-left flex justify-between items-center">
+                Market order (USDC)
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </>
+          )}
+
           {/* Amount Input */}
           <div>
             <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
@@ -208,10 +272,9 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
             </div>
           </div>
 
-          {/* Slider + % box (layout per boss ref; theme tokens) */}
+          {/* Slider (tooltip shows value; no side box) */}
           <div className="py-1">
-            <div className="flex items-center gap-3">
-              <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5 flex-1">
+            <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5">
               {/* Progress bar - adjusted to not overflow */}
               <div
                 className="absolute h-full rounded-full bg-[var(--text-primary)]"
@@ -223,7 +286,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
               
               {/* Custom Thumb - Smaller, with proper boundary */}
               <div
-                className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--bg-secondary)] border-2 border-[var(--text-primary)] pointer-events-none ${
+                className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)] pointer-events-none ${
                   showSliderTooltip ? 'w-3 h-3' : 'w-2 h-2'
                 }`}
                 style={{
@@ -270,10 +333,6 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                 ))}
               </div>
             </div>
-            <div className="px-3 py-2 rounded-md bg-[var(--bg-tertiary)] border border-[var(--border-primary)] text-sm text-[var(--text-primary)] min-w-[64px] text-center">
-              {Math.round(sliderValue)} %
-            </div>
-          </div>
           </div>
 
           {/* Position Info */}

@@ -34,7 +34,7 @@ export const MobilePerpTradingForm: React.FC<MobilePerpTradingFormProps> = ({
   const [showCalculator, setShowCalculator] = useState(false);
 
   const baseToken = selectedPair.symbol.split('/')[0];
-  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDC';
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
@@ -180,10 +180,9 @@ export const MobilePerpTradingForm: React.FC<MobilePerpTradingFormProps> = ({
             />
           </div>
 
-          {/* Slider + % box (layout per boss ref; theme tokens) */}
+          {/* Slider (tooltip shows value; no side box) */}
           <div className="py-2">
-            <div className="flex items-center gap-3">
-              <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5 flex-1">
+            <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5">
               {/* Progress bar - adjusted to not overflow */}
               <div
                 className="absolute h-full rounded-full bg-[var(--text-primary)]"
@@ -195,7 +194,7 @@ export const MobilePerpTradingForm: React.FC<MobilePerpTradingFormProps> = ({
               
               {/* Custom Thumb - Smaller, with proper boundary */}
               <div
-                className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--bg-secondary)] border-2 border-[var(--text-primary)] pointer-events-none ${
+                className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)] pointer-events-none ${
                   showSliderTooltip ? 'w-3 h-3' : 'w-2 h-2'
                 }`}
                 style={{ 
@@ -242,10 +241,6 @@ export const MobilePerpTradingForm: React.FC<MobilePerpTradingFormProps> = ({
                 ))}
               </div>
             </div>
-            <div className="px-3 py-2 rounded-md bg-[var(--bg-tertiary)] border border-[var(--border-primary)] text-sm text-[var(--text-primary)] min-w-[64px] text-center">
-              {Math.round(sliderValue)} %
-            </div>
-          </div>
           </div>
 
           {/* Position Info */}

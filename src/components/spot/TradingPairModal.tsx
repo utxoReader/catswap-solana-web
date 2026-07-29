@@ -22,7 +22,6 @@ const TOKEN_ICONS: Record<string, string> = {
   DOGE: 'Ð',
   ADA: '₳',
   AVAX: 'A',
-  USDT: '₮',
   USDC: 'U',
 };
 
@@ -36,7 +35,6 @@ const TOKEN_COLORS: Record<string, string> = {
   DOGE: '#C2A633',
   ADA: '#0033AD',
   AVAX: '#E84142',
-  USDT: '#26A17B',
   USDC: '#2775CA',
 };
 

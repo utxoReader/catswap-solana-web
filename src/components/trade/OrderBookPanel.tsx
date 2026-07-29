@@ -42,7 +42,7 @@ export const OrderBookPanel: React.FC<OrderBookPanelProps> = ({
       <div className="flex-1 overflow-y-auto px-2">
         {/* Header */}
         <div className="grid grid-cols-3 px-2 py-1.5 text-xs text-foreground-tertiary">
-          <span>Price(USDT)</span>
+          <span>Price(USDC)</span>
           <span className="text-right">
             Amount({selectedPair.symbol.split('/')[0]})
           </span>

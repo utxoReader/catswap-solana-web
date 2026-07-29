@@ -23,17 +23,16 @@ const TOKEN_COLORS: Record<string, string> = {
   ETH: '#627EEA',
   SOL: '#14F195',
   BNB: '#F3BA2F',
-  USDT: '#26A17B',
   USDC: '#2775CA',
 };
 
 const POOLS: Pool[] = [
-  { id: '1', tokenA: 'BTC', tokenB: 'USDT', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 90.49, apr7d: 90.49, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
-  { id: '2', tokenA: 'BTC', tokenB: 'USDT', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 50.88, apr7d: 50.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '3', tokenA: 'BTC', tokenB: 'USDT', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 8.56, apr7d: 8.56, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '4', tokenA: 'BTC', tokenB: 'USDT', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 20.88, apr7d: 20.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: false },
-  { id: '5', tokenA: 'BTC', tokenB: 'USDT', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 10.88, apr7d: 10.88, feeTier: '0.5% / 50%', hasPosition: false, hasFees: false },
-  { id: '6', tokenA: 'ETH', tokenB: 'USDT', tvl: 32400000, providers: 85, volume24h: 32400000, fee24h: 15.23, apr7d: 15.23, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
+  { id: '1', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 90.49, apr7d: 90.49, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
+  { id: '2', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 50.88, apr7d: 50.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
+  { id: '3', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 8.56, apr7d: 8.56, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
+  { id: '4', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 20.88, apr7d: 20.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: false },
+  { id: '5', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 10.88, apr7d: 10.88, feeTier: '0.5% / 50%', hasPosition: false, hasFees: false },
+  { id: '6', tokenA: 'ETH', tokenB: 'USDC', tvl: 32400000, providers: 85, volume24h: 32400000, fee24h: 15.23, apr7d: 15.23, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
 ];
 
 const formatCurrency = (value: number) => {

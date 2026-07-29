@@ -45,7 +45,7 @@ export const CalculatorModal: React.FC<CalculatorModalProps> = ({
   ]);
 
   const baseToken = selectedPair.symbol.split('/')[0];
-  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDC';
 
   // Calculate max position size based on leverage
   const maxPositionSize = useMemo(() => {

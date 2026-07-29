@@ -3,7 +3,7 @@ import { TradingPair, CandleData } from '../types';
 export const tradingPairs: TradingPair[] = [
   {
     id: 'btc-usdt',
-    symbol: 'BTC/USDT',
+    symbol: 'BTC/USDC',
     name: 'Bitcoin',
     price: 98542.36,
     change24h: 2.34,
@@ -13,7 +13,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'eth-usdt',
-    symbol: 'ETH/USDT',
+    symbol: 'ETH/USDC',
     name: 'Ethereum',
     price: 3456.78,
     change24h: -1.23,
@@ -23,7 +23,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'sol-usdt',
-    symbol: 'SOL/USDT',
+    symbol: 'SOL/USDC',
     name: 'Solana',
     price: 187.45,
     change24h: 5.67,
@@ -33,7 +33,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'bnb-usdt',
-    symbol: 'BNB/USDT',
+    symbol: 'BNB/USDC',
     name: 'BNB',
     price: 654.32,
     change24h: 0.89,
@@ -43,7 +43,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'xrp-usdt',
-    symbol: 'XRP/USDT',
+    symbol: 'XRP/USDC',
     name: 'XRP',
     price: 2.45,
     change24h: -3.21,
@@ -53,7 +53,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'doge-usdt',
-    symbol: 'DOGE/USDT',
+    symbol: 'DOGE/USDC',
     name: 'Dogecoin',
     price: 0.3823,
     change24h: 8.45,
@@ -63,7 +63,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'ada-usdt',
-    symbol: 'ADA/USDT',
+    symbol: 'ADA/USDC',
     name: 'Cardano',
     price: 0.7823,
     change24h: 1.23,
@@ -73,7 +73,7 @@ export const tradingPairs: TradingPair[] = [
   },
   {
     id: 'avax-usdt',
-    symbol: 'AVAX/USDT',
+    symbol: 'AVAX/USDC',
     name: 'Avalanche',
     price: 42.56,
     change24h: -2.45,

@@ -18,20 +18,20 @@ interface SpotTradingPageProps {
 
 const TOKEN_ICONS: Record<string, string> = {
   BTC: '₿', ETH: 'Ξ', SOL: '◎', BNB: 'B', XRP: '✕',
-  DOGE: 'Ð', ADA: '₳', AVAX: 'A', USDT: '₮', USDC: 'U',
+  DOGE: 'Ð', ADA: '₳', AVAX: 'A', USDC: 'U',
 };
 
 const TOKEN_COLORS: Record<string, string> = {
   BTC: '#F7931A', ETH: '#627EEA', SOL: '#14F195', BNB: '#F3BA2F',
   XRP: '#23292F', DOGE: '#C2A633', ADA: '#0033AD', AVAX: '#E84142',
-  USDT: '#26A17B', USDC: '#2775CA',
+  USDC: '#2775CA',
 };
 
 export const SpotTradingPage: React.FC<SpotTradingPageProps> = ({
   connected,
   publicKey,
   connectWallet,
-  selectedPair: initialPair = 'BTC/USDT',
+  selectedPair: initialPair = 'BTC/USDC',
 }) => {
   const [selectedPair, setSelectedPair] = useState<TradingPair>(() => {
     const found = tradingPairs.find(p => p.symbol === initialPair);
@@ -60,7 +60,7 @@ export const SpotTradingPage: React.FC<SpotTradingPageProps> = ({
   const getTokenColor = (symbol: string) => TOKEN_COLORS[symbol.split('/')[0]] || '#888';
 
   const baseToken = selectedPair.symbol.split('/')[0];
-  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDC';
   const priceChangeColor = selectedPair.change24h >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const priceChangeSign = selectedPair.change24h >= 0 ? '+' : '';
 

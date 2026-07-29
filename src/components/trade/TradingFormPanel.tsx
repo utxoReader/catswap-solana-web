@@ -26,7 +26,7 @@ interface Order {
 const OPEN_ORDERS: Order[] = [
   {
     id: '1',
-    pair: 'BTC/USDT',
+    pair: 'BTC/USDC',
     side: 'buy',
     type: 'limit',
     price: 95000,
@@ -57,7 +57,7 @@ export const TradingFormPanel: React.FC<TradingFormPanelProps> = ({
   };
 
   const baseSymbol = selectedPair.symbol.split('/')[0];
-  const quoteSymbol = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteSymbol = selectedPair.symbol.split('/')[1] || 'USDC';
 
   return (
     <div className="flex flex-col h-full bg-[var(--bg-secondary)]">

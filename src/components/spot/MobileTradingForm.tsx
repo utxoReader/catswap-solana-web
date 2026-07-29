@@ -30,7 +30,7 @@ export const MobileTradingForm: React.FC<MobileTradingFormProps> = ({
   const [showSliderTooltip, setShowSliderTooltip] = useState(false);
 
   const baseToken = selectedPair.symbol.split('/')[0];
-  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDT';
+  const quoteToken = selectedPair.symbol.split('/')[1] || 'USDC';
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value);
@@ -160,7 +160,7 @@ export const MobileTradingForm: React.FC<MobileTradingFormProps> = ({
             
             {/* Custom Thumb - Smaller, with proper boundary */}
             <div
-              className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--bg-secondary)] border-2 border-[var(--text-primary)] pointer-events-none ${
+              className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)] pointer-events-none ${
                 showSliderTooltip ? 'w-3 h-3' : 'w-2 h-2'
               }`}
               style={{ 
@@ -213,7 +213,7 @@ export const MobileTradingForm: React.FC<MobileTradingFormProps> = ({
         <div className="flex justify-between text-sm">
           <span className="text-[var(--text-secondary)]">Available</span>
           <span className="text-[var(--text-primary)]">
-            {connected ? '10,000 USDT' : '--'}
+            {connected ? '10,000 USDC' : '--'}
           </span>
         </div>
 

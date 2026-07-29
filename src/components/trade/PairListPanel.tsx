@@ -26,11 +26,11 @@ export const PairListPanel: React.FC<PairListPanelProps> = ({
     <div className="flex flex-col h-full bg-[var(--bg-secondary)]">
       {/* Tabs */}
       <div className="flex gap-1 p-2 border-b border-[var(--border-primary)]">
-        {['USDT', 'USD', 'BTC'].map((tab) => (
+        {['USDC', 'USD', 'BTC'].map((tab) => (
           <button
             key={tab}
             className={`flex-1 px-2 py-1.5 text-xs font-medium rounded transition-colors ${
-              tab === 'USDT'
+              tab === 'USDC'
                 ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]'
             }`}
@@ -61,8 +61,8 @@ export const PairListPanel: React.FC<PairListPanelProps> = ({
           >
             <div className="flex flex-col">
               <span className="text-sm font-medium text-[var(--text-primary)]">
-                {pair.symbol.replace('/USDT', '')}
-                <span className="text-[var(--text-tertiary)]">/USDT</span>
+                {pair.symbol.replace('/USDC', '')}
+                <span className="text-[var(--text-tertiary)]">/USDC</span>
               </span>
               <span className="text-xs text-[var(--text-tertiary)]">
                 Vol {formatVolume(pair.volume24h)}

@@ -15,7 +15,6 @@ const TOKEN_COLORS: Record<string, string> = {
   ETH: '#627EEA',
   SOL: '#14F195',
   BNB: '#F3BA2F',
-  USDT: '#26A17B',
   USDC: '#2775CA',
 };
 
