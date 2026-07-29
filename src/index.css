@@ -1,0 +1,330 @@
+/* ============================================
+   CatSwap - OKX Design System
+   System Font Stack Strategy
+   ============================================
+   
+   Font Stack Philosophy:
+   - No external font CDN dependencies
+   - Leverage system fonts for optimal performance
+   - Comprehensive CJK (Chinese) font support
+   - Zero layout shift / FOUT
+   
+   Platform Coverage:
+   - macOS/iOS: San Francisco + PingFang
+   - Windows: Segoe UI + Microsoft YaHei
+   - Android: Roboto + Noto Sans
+   - Linux: Roboto + Source Han
+   - HarmonyOS: HarmonyOS Sans
+   
+   Reference: OKX Web Font Strategy
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   OKX Design System - Dark/Light Theme
+   ============================================ */
+
+@layer base {
+  :root {
+    /* OKX Brand Colors */
+    --okx-primary: #2ED4A7;
+    --okx-primary-hover: #25B08D;
+    --okx-primary-light: rgba(46, 212, 167, 0.1);
+    
+    /* Trading Colors - Always consistent */
+    --color-buy: #0ECB81;
+    --color-buy-hover: #0AB46F;
+    --color-buy-light: rgba(14, 203, 129, 0.1);
+    --color-buy-bg: rgba(14, 203, 129, 0.08);
+    
+    --color-sell: #F6465D;
+    --color-sell-hover: #E03A50;
+    --color-sell-light: rgba(246, 70, 93, 0.1);
+    --color-sell-bg: rgba(246, 70, 93, 0.08);
+
+    /* Aliases for components referencing success/danger var() names
+       (root cause of invisible-text buttons: these vars were undefined,
+       so backgrounds fell back to transparent). */
+    --color-success: var(--color-buy);
+    --color-success-hover: var(--color-buy-hover);
+    --color-danger: var(--color-sell);
+    --color-danger-hover: var(--color-sell-hover);
+    
+    /* Warning/Info */
+    --color-warning: #F0B90B;
+    --color-info: #3398DB;
+    
+    /* Dark Theme (Default) - OKX Style: Pure black with gray separators */
+    --bg-primary: #2E2E2E;
+    --bg-secondary: #000000;
+    --bg-tertiary: #1A1A1A;
+    --bg-quaternary: #2E2E2E;
+    --bg-tertiary: #1A1A1A;
+    --bg-quaternary: #2E2E2E;
+    --bg-hover: #2E2E2E;
+    --bg-active: #3C3C3C;
+    --bg-input: #1A1A1A;
+    --bg-card: #000000;
+    --bg-tooltip: #2E2E2E;
+    
+    --border-primary: #2E2E2E;
+    --border-secondary: #2E2E2E;
+    --border-hover: #3C3C3C;
+    --border-active: #4A4A4A;
+    
+    --text-primary: #EAECEF;
+    --text-secondary: #848E9C;
+    --text-tertiary: #5E6673;
+    --text-muted: #474D57;
+    
+    /* OKX Specific */
+    --okx-bg: #0B0E11;
+    --okx-card: #151A21;
+    --okx-border: #2B3139;
+    --okx-text: #EAECEF;
+    --okx-text-secondary: #848E9C;
+    --okx-success: #0ECB81;
+    --okx-danger: #F6465D;
+    --okx-warning: #F0B90B;
+    
+    /* Radius - OKX uses subtle rounded corners */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-full: 9999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 200ms ease;
+    --transition-slow: 300ms ease;
+  }
+
+  [data-theme='light'] {
+    --bg-primary: #EBEBEB;
+    --bg-secondary: #FFFFFF;
+    --bg-tertiary: #F5F5F5;
+    --bg-quaternary: #EBEBEB;
+    --bg-hover: #F5F5F5;
+    --bg-active: #EBEBEB;
+    --bg-input: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-tooltip: #474D57;
+    
+    --border-primary: #EBEBEB;
+    --border-secondary: #F0F0F0;
+    --border-hover: #E0E0E0;
+    --border-active: #CCCCCC;
+    
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --text-muted: #CCCCCC;
+    
+    /* OKX Light */
+    --okx-bg: #FFFFFF;
+    --okx-card: #FFFFFF;
+    --okx-border: #E6E6E6;
+    --okx-text: #1A1A1A;
+    --okx-text-secondary: #666666;
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 18px; /* 等比例放大字体 ~12.5% */
+  }
+
+  body {
+    @apply m-0 font-sans;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color var(--transition-base), color var(--transition-base);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Focus visible styles for better accessibility */
+  :focus-visible {
+    outline: 2px solid var(--okx-primary);
+    outline-offset: 2px;
+  }
+
+  /* Remove focus outline for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+@layer utilities {
+  .text-buy {
+    color: var(--color-buy);
+  }
+  .text-sell {
+    color: var(--color-sell);
+  }
+  .bg-buy {
+    background-color: var(--color-buy);
+  }
+  .bg-sell {
+    background-color: var(--color-sell);
+  }
+  .bg-buy-light {
+    background-color: var(--color-buy-light);
+  }
+  .bg-sell-light {
+    background-color: var(--color-sell-light);
+  }
+  .border-buy {
+    border-color: var(--color-buy);
+  }
+  .border-sell {
+    border-color: var(--color-sell);
+  }
+  
+  /* OKX-style button variants — boss rule (2026-07-29): primary buttons
+     are black/white inverted by theme; only buy/sell/long/short keep color. */
+  .btn-primary {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    background-color: var(--text-primary);
+    color: var(--bg-secondary);
+  }
+  .btn-primary:hover {
+    opacity: 0.88;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+  }
+  .btn-secondary:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--border-hover);
+  }
+  
+  .btn-buy {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    background-color: var(--color-buy);
+    color: #000;
+  }
+  .btn-buy:hover {
+    background-color: var(--color-buy-hover);
+  }
+  
+  .btn-sell {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    background-color: var(--color-sell);
+    color: #fff;
+  }
+  .btn-sell:hover {
+    background-color: var(--color-sell-hover);
+  }
+  
+  /* OKX Card Style */
+  .card-okx {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+  }
+  
+  /* OKX Input Style */
+  .input-okx {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    transition: border-color 300ms ease-out, color 300ms ease-out, background-color 300ms ease-out;
+  }
+  .input-okx:focus {
+    border-color: var(--okx-primary);
+    outline: none;
+  }
+  .input-okx::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+/* ============================================
+   Scrollbar Styles - OKX Style
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ============================================
+   Selection
+   ============================================ */
+
+::selection {
+  background: var(--okx-primary-light);
+  color: var(--okx-primary);
+}
+
+/* ============================================
+   Reduced Motion Preference
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   Number Input - Remove Spinners
+   ============================================ */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

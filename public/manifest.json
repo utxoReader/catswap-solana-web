@@ -1,0 +1,23 @@
+{
+  "short_name": "CatSwap",
+  "name": "CatSwap Bitcoin L2 DEX",
+  "description": "Trade spot markets, perpetuals, and liquidity pools on CatSwap.",
+  "icons": [
+    {
+      "src": "header_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "logo_light.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
