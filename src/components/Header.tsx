@@ -5,10 +5,18 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { AppPage, getPagePath } from "../seo/routeMeta";
 import { useTheme } from "../hooks/useTheme";
 
-/** Solana 3-bar mark (monochrome, follows currentColor). */
+/** Solana 3-bar mark (official gradient). */
 const SolanaMark: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 20 16" className={className} fill="currentColor" aria-hidden>
-    <path d="M3.9 0.4h12.7l-2.1 2.1H1.8L3.9 0.4zM3.9 6.9h12.7l-2.1 2.1H1.8L3.9 6.9zM3.9 13.5h12.7l-2.1 2.1H1.8l2.1-2.1z" />
+  <svg viewBox="0 0 20 16" className={className} aria-hidden>
+    <defs>
+      <linearGradient id="sol-grad" x1="0" y1="0" x2="20" y2="16" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#14F195" />
+        <stop offset="100%" stopColor="#9945FF" />
+      </linearGradient>
+    </defs>
+    <g fill="url(#sol-grad)">
+      <path d="M3.9 0.4h12.7l-2.1 2.1H1.8L3.9 0.4zM3.9 6.9h12.7l-2.1 2.1H1.8L3.9 6.9zM3.9 13.5h12.7l-2.1 2.1H1.8l2.1-2.1z" />
+    </g>
   </svg>
 );
 
