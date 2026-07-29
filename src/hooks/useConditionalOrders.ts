@@ -16,11 +16,36 @@ export const COND_KIND = {
   SL_SHORT: 3,
 } as const;
 
+/** Convert a decimal price string to chain E32 (10^32 fixed-point), all-BN, no f64. */
+export function decimalToE32(s: string): BN {
+  const trimmed = s.trim();
+  if (!trimmed || trimmed === ".") return new BN(0);
+  const [intPart, fracRaw = ""] = trimmed.split(".");
+  // Pad / truncate fractional part to exactly 32 decimal places.
+  const frac = (fracRaw + "0".repeat(32)).slice(0, 32);
+  return new BN(intPart || "0")
+    .mul(new BN(10).pow(new BN(32)))
+    .add(new BN(frac || "0"));
+}
+
 export interface CreateConditionalOrderParams {
   kind: number; // 0=TP_long, 1=SL_long, 2=TP_short, 3=SL_short
-  triggerPrice: number; // human-readable price
-  keeperFeeBps?: number; // default 10 = 0.1%
+  triggerPrice: string; // human-readable price (decimal string, exact conversion to E32)
   expiresAt?: number; // unix timestamp, 0 = no expiry
+}
+
+/** Flat keeper fee from CondOrderConfig (protocol-fixed, governance-set). */
+export async function fetchKeeperFlatFee(program: any, programId: string): Promise<number | null> {
+  try {
+    const [cfgPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from("cond_order_cfg")],
+      new PublicKey(programId),
+    );
+    const cfg = await (program as any).account.condOrderConfig.fetchNullable(cfgPda);
+    return cfg ? (cfg.keeperRewardFlatUsdc as number) : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -72,13 +97,12 @@ export function useConditionalOrders() {
       // Derive ConditionalOrder PDA
       const orderPda = deriveOrderPda(position, params.kind, progId);
 
-      // Convert trigger price to E32 fixed-point
-      const triggerPriceE32 = new BN(Math.floor(params.triggerPrice * Math.pow(2, 32)));
-      const keeperFeeBps = params.keeperFeeBps ?? 10;
+      // Convert trigger price to chain E32 (10^32 decimal fixed-point, all-BN, no f64).
+      const triggerPriceE32 = decimalToE32(params.triggerPrice);
       const expiresAt = params.expiresAt ?? 0;
 
       const tx = await (program.methods as any)
-        .createConditionalOrder(params.kind, triggerPriceE32, keeperFeeBps, expiresAt)
+        .createConditionalOrder(params.kind, triggerPriceE32, expiresAt)
         .accounts({
           owner: publicKey,
           userPortfolio,

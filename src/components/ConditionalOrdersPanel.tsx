@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Button, Input } from "./ui";
-import { useConditionalOrders, COND_KIND } from "../hooks/useConditionalOrders";
+import { useConditionalOrders, COND_KIND, fetchKeeperFlatFee } from "../hooks/useConditionalOrders";
+import { useAnchorProgram } from "../hooks/useAnchorProgram";
 import { useUserAccount } from "../hooks/useUserAccount";
 import { usePoolData, sqrtPriceE16ToPrice } from "../hooks/usePoolData";
 
@@ -25,12 +26,14 @@ const KIND_COLORS: Record<number, string> = {
 export const ConditionalOrdersPanel: React.FC<ConditionalOrdersPanelProps> = ({ connected }) => {
   const { poolData } = usePoolData();
   const { userAccount } = useUserAccount();
+  const { program } = useAnchorProgram();
   const { createOrder, cancelOrder, fetchOrders, loading, error, txSig } = useConditionalOrders();
 
   const [orders, setOrders] = useState<{ kind: number; data: any }[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [selectedKind, setSelectedKind] = useState<number>(COND_KIND.TP_LONG);
   const [triggerPrice, setTriggerPrice] = useState("");
+  const [keeperFlatFee, setKeeperFlatFee] = useState<number | null>(null);
 
   const currentPrice = poolData ? sqrtPriceE16ToPrice(poolData.sqrtPriceE16) : 0;
   const hasPosition = userAccount ? !userAccount.perp?.size?.isZero() : false;
@@ -43,6 +46,13 @@ export const ConditionalOrdersPanel: React.FC<ConditionalOrdersPanelProps> = ({ 
       setOrders([]);
     }
   }, [connected, hasPosition, txSig]);
+
+  // Fetch protocol flat keeper fee from CondOrderConfig
+  useEffect(() => {
+    if (connected && program) {
+      fetchKeeperFlatFee(program, (program as any).programId).then(setKeeperFlatFee);
+    }
+  }, [connected, program]);
 
   if (!connected) {
     return (
@@ -72,11 +82,11 @@ export const ConditionalOrdersPanel: React.FC<ConditionalOrdersPanelProps> = ({ 
   }
 
   const handleCreate = async () => {
-    const price = parseFloat(triggerPrice || "0");
-    if (price <= 0) return;
+    const raw = (triggerPrice || "").trim();
+    if (!raw || !/^\d+(\.\d+)?$/.test(raw)) return;
     await createOrder({
       kind: selectedKind,
-      triggerPrice: price,
+      triggerPrice: raw,
     });
     setTriggerPrice("");
     setShowCreate(false);
@@ -139,6 +149,14 @@ export const ConditionalOrdersPanel: React.FC<ConditionalOrdersPanelProps> = ({ 
                 value={triggerPrice}
                 onChange={(e) => setTriggerPrice(e.target.value)}
               />
+            </div>
+            <div className="text-xs text-[var(--text-tertiary)]">
+              Keeper fee:{" "}
+              <span className="text-[var(--text-primary)]">
+                {keeperFlatFee !== null
+                  ? `$${(keeperFlatFee / 1_000_000).toFixed(6)} USDC (protocol-fixed)`
+                  : "…"}
+              </span>
             </div>
             <Button onClick={handleCreate} disabled={loading || !triggerPrice} className="w-full">
               {loading ? "Creating..." : "Create Order"}

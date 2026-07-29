@@ -445,6 +445,241 @@
       ]
     },
     {
+      "name": "initConversionConfig",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "globalInsuranceFund",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "conversionConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "keeperRewardFlatUsdc",
+          "type": "u64"
+        },
+        {
+          "name": "maxSlippageBps",
+          "type": "u16"
+        },
+        {
+          "name": "minBatchUsdcEquiv",
+          "type": "u64"
+        },
+        {
+          "name": "maxConversionAgeSecs",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "initConversionState",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "conversionConfig",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "conversionState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "perMintInventoryCap",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "syncConversionInventory",
+      "accounts": [
+        {
+          "name": "conversionState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "ifFeeVaultRecord",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "IF fee vault record \u2014 P1-last fix: binds source_fee_vault to the",
+            "officially registered per-mint vault, preventing fake vault injection."
+          ]
+        },
+        {
+          "name": "sourceFeeVault",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "IF fee vault \u2014 must match the registered vault."
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "convertIfFee",
+      "accounts": [
+        {
+          "name": "keeper",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Permissionless keeper."
+          ]
+        },
+        {
+          "name": "conversionConfig",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Boxed: all anchor types in this struct are boxed to stay under the",
+            "4KB SBF stack frame limit (same pattern as Swap::pool/aggregate)."
+          ]
+        },
+        {
+          "name": "conversionState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sourceMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "ifFeeVaultRecord",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "P2: bind source_fee_vault to the registered IfFeeVaultRecord"
+          ]
+        },
+        {
+          "name": "sourceFeeVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Source IF fee vault \u2014 must match registered vault."
+          ]
+        },
+        {
+          "name": "globalInsuranceFund",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "ifShard",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Destination IF shard \u2014 P1-3 fix: seeds constraint + active."
+          ]
+        },
+        {
+          "name": "shardUsdcVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Canonical USDC vault \u2014 P1-3 fix: bound to shard.usdc_vault."
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The pool to swap on (non-USDC mint \u2194 USDC). Boxed \u2014 same stack-frame",
+            "fix as Swap (Pool ~400B, otherwise ConvertIfFee::try_accounts",
+            "overflows the 4KB SBF stack)."
+          ]
+        },
+        {
+          "name": "token0Vault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool token0 vault."
+          ]
+        },
+        {
+          "name": "token1Vault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool token1 vault."
+          ]
+        },
+        {
+          "name": "aggregate",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool aggregate PDA (lazy-init, same pattern as Swap). Boxed to stay",
+            "under the 4KB SBF stack frame limit."
+          ]
+        },
+        {
+          "name": "keeperUsdcAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Keeper's USDC token account (receives keeper reward)."
+          ]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "setRiskOpenEnabled",
       "accounts": [
         {
@@ -3962,6 +4197,70 @@
       "args": []
     },
     {
+      "name": "initCondOrderConfig",
+      "docs": [
+        "Governance: initialize the conditional-order config (one-time;",
+        "holds the protocol-fixed flat keeper fee)."
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "registry",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Gate: admin must be the registry admin (same authority family as",
+            "the other governance setters)."
+          ]
+        },
+        {
+          "name": "condOrderConfig",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "keeperRewardFlatUsdc",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "setCondOrderKeeperFee",
+      "docs": [
+        "Governance: update the flat keeper fee (event emitted; applies to",
+        "all orders, including existing ones \u2014 noted in the spec)."
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "condOrderConfig",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "newFlatUsdc",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "createConditionalOrder",
       "docs": [
         "Place a TP/SL order on a live PM position (owner-signed; one per",
@@ -4013,10 +4312,6 @@
           "type": "u128"
         },
         {
-          "name": "keeperFeeBps",
-          "type": "u16"
-        },
-        {
           "name": "expiresAt",
           "type": "i64"
         }
@@ -4063,6 +4358,15 @@
           "name": "portfolioConfig",
           "isMut": false,
           "isSigner": false
+        },
+        {
+          "name": "condOrderConfig",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Flat keeper-fee source of truth (governance-set; execute reads,",
+            "never the order \u2014 the order no longer carries a fee field)."
+          ]
         },
         {
           "name": "userPortfolio",
@@ -4591,13 +4895,61 @@
       }
     },
     {
+      "name": "CondOrderConfig",
+      "docs": [
+        "Governance config PDA \u2014 seeds [b\"cond_order_cfg\"] (one per program).",
+        "",
+        "Layout pin: INIT_SPACE = 51 B (59 B incl. 8 B discriminator).",
+        "admin 32 | keeper_reward_flat_usdc 8 | bump 1 | _reserved 10",
+        "",
+        "Holds the protocol-fixed FLAT keeper fee (boss directive 2026-07-29):",
+        "a user-set bps fee was a self-dealing channel and any percentage of",
+        "notional scales absurdly on large closes \u2014 keeper work is one tx,",
+        "so the reward is one fixed amount, clamped to proceeds at payout."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Governance authority (setter gate; == registry.admin at init)."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "keeperRewardFlatUsdc",
+            "docs": [
+              "Flat keeper reward per execution, USDC e6 atoms.",
+              "Default placeholder 10_000 (0.01 USDC) \u2014 S1-08 calibration owns",
+              "the final value."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                10
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "ConditionalOrder",
       "docs": [
         "ConditionalOrder PDA \u2014 seeds [b\"cond_order\", position, kind_byte].",
         "",
-        "Layout pin: INIT_SPACE = 172 B (180 B incl. 8 B discriminator).",
+        "Layout pin: INIT_SPACE = 170 B (178 B incl. 8 B discriminator).",
         "owner 32 | portfolio 32 | position 32 | pool 32 | kind 1",
-        "| trigger_price_e32 16 | keeper_fee_bps 2 | created_at 8",
+        "| trigger_price_e32 16 | created_at 8",
         "| position_open_seq 8 | expires_at 8 | bump 1"
       ],
       "type": {
@@ -4644,14 +4996,6 @@
               "Trigger price, E32 quote (same scale as conservative_side_mark)."
             ],
             "type": "u128"
-          },
-          {
-            "name": "keeperFeeBps",
-            "docs": [
-              "Keeper fee in bps of the close notional",
-              "([COND_MIN_KEEPER_FEE_BPS, COND_MAX_KEEPER_FEE_BPS] at creation)."
-            ],
-            "type": "u16"
           },
           {
             "name": "createdAt",
@@ -4836,6 +5180,119 @@
               "array": [
                 "u8",
                 24
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "IfFeeConversionConfig",
+      "docs": [
+        "S1-02B: IF Fee Conversion Config \u2014 governance PDA [b\"if_conv_cfg\"]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "keeperRewardFlatUsdc",
+            "docs": [
+              "Fixed flat keeper reward per conversion (E6 USDC atoms).",
+              "Boss directive: percentage-based reward is exploitable and unfair for",
+              "large amounts. Fixed flat fee covers gas (~$0.001) + small margin."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "maxSlippageBps",
+            "type": "u16"
+          },
+          {
+            "name": "minBatchUsdcEquiv",
+            "type": "u64"
+          },
+          {
+            "name": "maxConversionAgeSecs",
+            "type": "i64"
+          },
+          {
+            "name": "routeCount",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "IfFeeConversionState",
+      "docs": [
+        "S1-02B: Per-mint conversion inventory \u2014 PDA [b\"if_conv\", mint]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "rawInventory",
+            "type": "u128"
+          },
+          {
+            "name": "pendingSince",
+            "type": "i64"
+          },
+          {
+            "name": "lastConversionTime",
+            "type": "i64"
+          },
+          {
+            "name": "lifetimeRawIn",
+            "type": "u128"
+          },
+          {
+            "name": "lifetimeRawConverted",
+            "type": "u128"
+          },
+          {
+            "name": "lifetimeUsdcOut",
+            "type": "u128"
+          },
+          {
+            "name": "perMintInventoryCap",
+            "type": "u128"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                14
               ]
             }
           }
@@ -7326,6 +7783,15 @@
             "type": "i64"
           },
           {
+            "name": "basePriceRange",
+            "docs": [
+              "Immutable base price range (tier-set value at activation). All regime",
+              "multipliers apply to this base, preventing compounding across",
+              "consecutive regime transitions."
+            ],
+            "type": "u64"
+          },
+          {
             "name": "bump",
             "docs": [
               "PDA bump."
@@ -7679,6 +8145,26 @@
   ],
   "events": [
     {
+      "name": "CondOrderKeeperFeeUpdated",
+      "fields": [
+        {
+          "name": "oldFlatUsdc",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "newFlatUsdc",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
       "name": "ConditionalOrderCancelled",
       "fields": [
         {
@@ -7739,11 +8225,6 @@
         {
           "name": "triggerPriceE32",
           "type": "u128",
-          "index": false
-        },
-        {
-          "name": "keeperFeeBps",
-          "type": "u16",
           "index": false
         },
         {
@@ -7839,6 +8320,41 @@
         {
           "name": "netFundingQuote",
           "type": "i128",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "IfFeeConverted",
+      "fields": [
+        {
+          "name": "mint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "sellAmount",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "grossUsdcOut",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "keeperReward",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "netUsdcToIf",
+          "type": "u64",
           "index": false
         },
         {
@@ -8859,6 +9375,46 @@
       ]
     },
     {
+      "name": "VolRegimeCurveRebuilt",
+      "fields": [
+        {
+          "name": "pool",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "oldRegime",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "newRegime",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "oldPriceRange",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "newPriceRange",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "anchorPriceE32",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
       "name": "VolWidthActivated",
       "fields": [
         {
@@ -9589,6 +10145,41 @@
       "code": 6141,
       "name": "InsufficientReferralAccrued",
       "msg": "Insufficient accrued referral balance for claim"
+    },
+    {
+      "code": 6142,
+      "name": "ConversionConfigAlreadyInit",
+      "msg": "Conversion config already initialized"
+    },
+    {
+      "code": 6143,
+      "name": "ConversionMintNotApproved",
+      "msg": "Conversion mint not approved for IF intake"
+    },
+    {
+      "code": 6144,
+      "name": "ConversionTriggerNotMet",
+      "msg": "Conversion trigger not met: below batch threshold and within max age"
+    },
+    {
+      "code": 6145,
+      "name": "ConversionOutputBelowBound",
+      "msg": "Conversion output below oracle lower bound"
+    },
+    {
+      "code": 6146,
+      "name": "ConversionVaultDeltaMismatch",
+      "msg": "Vault delta verification failed: reported output \u2260 actual vault change"
+    },
+    {
+      "code": 6147,
+      "name": "ConversionRouteNotAllowlisted",
+      "msg": "Route program not allowlisted"
+    },
+    {
+      "code": 6148,
+      "name": "ConversionInventoryCapExceeded",
+      "msg": "Conversion inventory cap exceeded"
     }
   ],
   "metadata": {
