@@ -72,3 +72,63 @@ export function deriveVolRegimeState(
     programId,
   )[0];
 }
+
+// ---------------------------------------------------------------------------
+// Portfolio Margin (PM) PDAs
+// ---------------------------------------------------------------------------
+
+export const PORTFOLIO_CONFIG_SEED = Buffer.from("portfolio_config");
+export const PORTFOLIO_SEED = Buffer.from("portfolio");
+export const PORTFOLIO_ASSET_SEED = Buffer.from("portfolio_asset");
+export const PORTFOLIO_VAULT_SEED = Buffer.from("portfolio_vault");
+export const SESSION_SEED = Buffer.from("session");
+
+export function derivePortfolioConfig(programId: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [PORTFOLIO_CONFIG_SEED],
+    programId,
+  )[0];
+}
+
+export function deriveUserPortfolio(
+  programId: PublicKey,
+  owner: PublicKey,
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [PORTFOLIO_SEED, owner.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function derivePortfolioAsset(
+  programId: PublicKey,
+  portfolio: PublicKey,
+  mint: PublicKey,
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [PORTFOLIO_ASSET_SEED, portfolio.toBuffer(), mint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function derivePortfolioAssetVault(
+  programId: PublicKey,
+  portfolio: PublicKey,
+  mint: PublicKey,
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [PORTFOLIO_VAULT_SEED, portfolio.toBuffer(), mint.toBuffer()],
+    programId,
+  )[0];
+}
+
+export function deriveDelegateSession(
+  programId: PublicKey,
+  userAccount: PublicKey,
+  agent: PublicKey,
+): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [SESSION_SEED, userAccount.toBuffer(), agent.toBuffer()],
+    programId,
+  )[0];
+}
