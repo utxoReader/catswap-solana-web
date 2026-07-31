@@ -83,11 +83,15 @@ export function PortfolioPage() {
   const handleDeposit = async () => {
     try {
       setStatus("Depositing...");
-      // Read USDC mint from pool
-      const poolData = await (program.account as any).pool.fetch(
-        POOL_ADDRESS,
+      // Read canonical USDC mint from registry (K3 review: not pool.token1Mint)
+      const registryPda = PublicKey.findProgramAddressSync(
+        [Buffer.from("registry")],
+        progId,
+      )[0];
+      const registryData = await (program.account as any).poolRegistry.fetch(
+        registryPda,
       );
-      const usdcMint = poolData.token1Mint as PublicKey;
+      const usdcMint = registryData.usdcMint as PublicKey;
       const userUsdc = getAssociatedTokenAddressSync(usdcMint, publicKey!);
       const portfolioAssetPda = derivePortfolioAsset(
         progId,
