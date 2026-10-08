@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { TradingPair } from "../../types";
+import { Select } from "../ui/Select";
 import { CalculatorModal } from './CalculatorModal';
 import { useUserAccount } from "../../hooks/useUserAccount";
 import { usePerp } from "../../hooks/usePerp";
@@ -29,6 +30,8 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
   const [price, setPrice] = useState('');
   const [amount, setAmount] = useState('');
   const [sliderValue, setSliderValue] = useState(0);
+  const [tpTriggerType, setTpTriggerType] = useState('last');
+  const [tpslOrderType, setTpslOrderType] = useState('market');
   const [leverage, setLeverage] = useState(100);
   const [showLeverageModal, setShowLeverageModal] = useState(false);
   const [leverageInput, setLeverageInput] = useState('100');
@@ -88,9 +91,9 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
         <div className="grid grid-cols-2 gap-1 p-1 rounded-lg bg-[var(--bg-tertiary)]">
           <button
             onClick={() => setMode('open')}
-            className={`py-2 text-sm font-semibold rounded-md transition-colors ${
+            className={`h-7 px-3 text-xs font-medium rounded transition-colors ${
               isOpenMode
-                ? 'bg-[var(--color-success)] text-white'
+                ? 'bg-[#25A750] text-white'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -98,9 +101,9 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
           </button>
           <button
             onClick={() => setMode('close')}
-            className={`py-2 text-sm font-semibold rounded-md transition-colors ${
+            className={`h-7 px-3 text-xs font-medium rounded transition-colors ${
               !isOpenMode
-                ? 'bg-[var(--color-danger)] text-white'
+                ? 'bg-[#CA3F64] text-white'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
@@ -119,7 +122,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
         </button>
         <button
           onClick={() => setShowLeverageModal(true)}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded bg-[var(--bg-tertiary)] text-[var(--color-buy)] hover:bg-[var(--bg-quaternary)] transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--bg-quaternary)] transition-colors"
         >
           {leverage}x
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,8 +215,12 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                     </button>
                   </div>
                 </div>
-                <button className="px-3 py-2 text-xs font-medium rounded-md border border-[var(--border-primary)] text-[var(--text-primary)] bg-[var(--bg-tertiary)]">
-                  BBO
+                <button
+                  className="px-3 py-2 text-xs font-medium rounded-md border border-[var(--border-primary)] text-[var(--text-primary)] bg-[var(--bg-tertiary)]"
+                  title="一键把限价填成当前市价"
+                  onClick={() => setPrice(selectedPair.price.toFixed(2))}
+                >
+                  最优价
                 </button>
               </div>
             </div>
@@ -240,16 +247,24 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                   <label className="block text-xs text-[var(--text-secondary)] mb-1.5">
                     Trigger price type
                   </label>
-                  <button className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-primary)] border border-[var(--border-primary)] text-left flex justify-between items-center">
-                    Last
-                    <ChevronDown className="w-3 h-3" />
-                  </button>
+                  <Select
+                    value={tpTriggerType}
+                    onChange={setTpTriggerType}
+                    options={[
+                      { value: 'last', label: 'Last' },
+                      { value: 'mark', label: 'Mark', disabled: true },
+                    ]}
+                  />
                 </div>
               </div>
-              <button className="w-full px-3 py-2.5 rounded-md text-sm bg-[var(--bg-tertiary)] text-[var(--text-tertiary)] border border-[var(--border-primary)] text-left flex justify-between items-center">
-                Market order (USDC)
-                <ChevronDown className="w-3 h-3" />
-              </button>
+              <Select
+                value={tpslOrderType}
+                onChange={setTpslOrderType}
+                options={[
+                  { value: 'market', label: 'Market order (USDC)' },
+                  { value: 'limit', label: 'Limit order (USDC)', disabled: true },
+                ]}
+              />
             </>
           )}
 
@@ -272,28 +287,16 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
             </div>
           </div>
 
-          {/* Slider (tooltip shows value; no side box) */}
-          <div className="py-1">
-            <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5">
-              {/* Progress bar - adjusted to not overflow */}
+                    {/* Slider — OKX spec: 2px track / 8px hollow clickable nodes / 16px hollow handle / drag tooltip */}
+          <div className="py-2">
+            <div className="relative h-[2px] rounded-[3px] bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.13)] mx-2">
+              {/* Fill */}
               <div
-                className="absolute h-full rounded-full bg-[var(--text-primary)]"
-                style={{ 
-                  width: `calc(${sliderValue}% * 0.97 + 1.5%)`,
-                  left: '0%'
-                }}
+                className="absolute left-0 h-full rounded-[3px] bg-[var(--text-primary)]"
+                style={{ width: `calc(${sliderValue}% * 0.96 + 2%)` }}
               />
-              
-              {/* Custom Thumb - Smaller, with proper boundary */}
-              <div
-                className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--text-primary)] pointer-events-none ${
-                  showSliderTooltip ? 'w-3 h-3' : 'w-2 h-2'
-                }`}
-                style={{
-                  left: `calc(${sliderValue}% * 0.97 + 1.5% - ${showSliderTooltip ? 6 : 4}px)`
-                }}
-              />
-              
+          
+              {/* Drag input — expanded touch area, click anywhere to jump */}
               <input
                 type="range"
                 min="0"
@@ -306,32 +309,57 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                 onMouseLeave={() => setShowSliderTooltip(false)}
                 onTouchStart={() => setShowSliderTooltip(true)}
                 onTouchEnd={() => setShowSliderTooltip(false)}
-                className="absolute -inset-x-1.5 -inset-y-2 w-[calc(100%+12px)] h-5 opacity-0 cursor-pointer"
+                className="absolute -inset-x-2 -inset-y-2.5 w-[calc(100%+16px)] h-6 opacity-0 cursor-pointer"
               />
-              
-              {/* Percentage Tooltip */}
+          
+              {/* Handle — hollow circle, clearly bigger than nodes; grows while dragging */}
+              <div
+                className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--bg-secondary)] border border-[var(--text-primary)] pointer-events-none ${
+                  showSliderTooltip ? 'w-[11px] h-[11px]' : 'w-[9px] h-[9px]'
+                }`}
+                style={{ left: `calc(${sliderValue}% * 0.96 + 2%)` }}
+              />
+          
+              {/* Percentage tooltip while dragging */}
               {showSliderTooltip && (
                 <div
-                  className="absolute -top-9 px-2 py-1 bg-[var(--bg-tooltip)] text-white text-xs font-medium rounded pointer-events-none"
-                  style={{ left: `calc(${sliderValue}% * 0.97 + 1.5% - 16px)` }}
+                  className="absolute -top-9 px-2 py-1 bg-[var(--bg-tooltip)] text-white text-xs font-medium rounded pointer-events-none whitespace-nowrap"
+                  style={{ left: `calc(${sliderValue}% * 0.96 + 2%)`, transform: 'translateX(-50%)' }}
                 >
                   {Math.round(sliderValue)}%
                 </div>
               )}
-              
-              {/* Slider marks - Hollow circles, positioned within bounds */}
+          
+              {/* Nodes — 8px hollow circles; click = snap to exact step */}
               <div className="absolute inset-0 flex justify-between items-center pointer-events-none">
                 {[0, 25, 50, 75, 100].map((pct) => (
-                  <div
+                  <button
                     key={pct}
-                    className={`w-1.5 h-1.5 rounded-full border transition-colors ${
-                      sliderValue >= pct 
-                        ? 'bg-[var(--text-primary)] border-[var(--text-primary)]' 
-                        : 'bg-[var(--bg-secondary)] border-[var(--bg-quaternary)]'
+                    onClick={() => handleSliderChange(pct)}
+                    aria-label={`${pct}%`}
+                    className={`w-2 h-2 rounded-full border pointer-events-auto cursor-pointer transition-colors ${
+                      sliderValue >= pct
+                        ? 'bg-[var(--text-primary)] border-[var(--text-primary)]'
+                        : 'bg-[var(--bg-secondary)] border-[var(--border-active)]'
                     }`}
                   />
                 ))}
               </div>
+            </div>
+          
+            {/* Percentage labels — clickable */}
+            <div className="flex justify-between mt-2 mx-2">
+              {['0%', '25%', '50%', '75%', '100%'].map((label, idx) => (
+                <button
+                  key={label}
+                  onClick={() => handleSliderChange(idx * 25)}
+                  className={`text-[10px] transition-colors ${
+                    sliderValue >= idx * 25 ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -371,7 +399,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                 {isOpenMode ? (
                   <>
                     <button
-                      className="w-full py-3 rounded-full text-sm font-semibold bg-[var(--color-success)] text-white"
+                      className="w-full h-10 rounded-full text-sm font-normal bg-[#25A750] text-white hover:bg-[#25A750]/90 transition-colors"
                       disabled={!amount || parseFloat(amount) <= 0 || perpLoading}
                       onClick={async () => {
                         const amt = parseFloat(amount || '0');
@@ -384,7 +412,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                       {perpLoading ? 'Opening...' : 'Long'}
                     </button>
                     <button
-                      className="w-full py-3 rounded-full text-sm font-semibold bg-[var(--color-danger)] text-white"
+                      className="w-full h-10 rounded-full text-sm font-normal bg-[#CA3F64] text-white hover:bg-[#CA3F64]/90 transition-colors"
                       disabled={!amount || parseFloat(amount) <= 0 || perpLoading}
                       onClick={async () => {
                         const amt = parseFloat(amount || '0');
@@ -400,7 +428,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                 ) : (
                   <>
                     <button
-                      className="w-full py-3 rounded-full text-sm font-semibold bg-[var(--color-success)] text-white"
+                      className="w-full h-10 rounded-full text-sm font-normal bg-[#25A750] text-white hover:bg-[#25A750]/90 transition-colors"
                       disabled={!amount || parseFloat(amount) <= 0 || perpLoading}
                       onClick={async () => {
                         const amt = parseFloat(amount || '0');
@@ -411,7 +439,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
                       {perpLoading ? 'Closing...' : 'Close short'}
                     </button>
                     <button
-                      className="w-full py-3 rounded-full text-sm font-semibold bg-[var(--color-danger)] text-white"
+                      className="w-full h-10 rounded-full text-sm font-normal bg-[#CA3F64] text-white hover:bg-[#CA3F64]/90 transition-colors"
                       disabled={!amount || parseFloat(amount) <= 0 || perpLoading}
                       onClick={async () => {
                         const amt = parseFloat(amount || '0');
@@ -440,7 +468,7 @@ export const PerpsTradingForm: React.FC<PerpsTradingFormProps> = ({
           ) : (
             <button
               onClick={connectWallet}
-              className="w-full py-3 rounded-md text-sm font-semibold bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90 transition-opacity"
+              className="w-full h-10 rounded-full text-sm font-normal bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90 transition-opacity"
             >
               Connect Wallet
             </button>

@@ -23,7 +23,12 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import "./index.css";
 
 // Switch between: "devnet" | "testnet" | "mainnet-beta" | "http://localhost:8899"
-const RPC_ENDPOINT = import.meta.env.VITE_RPC_URL || clusterApiUrl("devnet");
+// A relative "/rpc" targets the vite dev proxy (see vite.config.ts) so the
+// page CSP (connect-src 'self') allows a local rehearsal validator.
+const RAW_RPC_ENDPOINT = import.meta.env.VITE_RPC_URL || clusterApiUrl("devnet");
+const RPC_ENDPOINT = RAW_RPC_ENDPOINT.startsWith("/")
+  ? `${window.location.origin}${RAW_RPC_ENDPOINT}`
+  : RAW_RPC_ENDPOINT;
 
 // Register all mainstream Solana wallets — users pick from the modal (Jupiter-style)
 // Backpack & Glow register via Wallet Standard injection; the modal auto-detects them.

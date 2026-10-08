@@ -1,0 +1,22 @@
+{
+ "src/components/ClaimFeesModal.tsx": 7,
+ "src/components/Header.tsx": 3,
+ "src/components/LandingPage.tsx": 5,
+ "src/components/MarketOverview.tsx": 9,
+ "src/components/OptionsPage.tsx": 11,
+ "src/components/PerpsTradingPage.tsx": 17,
+ "src/components/PoolsPage.tsx": 12,
+ "src/components/SpotTradingPage.tsx": 19,
+ "src/components/WalletModal.tsx": 18,
+ "src/components/spot/CalculatorModal.tsx": 5,
+ "src/components/spot/MobilePerpTradingForm.tsx": 10,
+ "src/components/spot/MobileTradingForm.tsx": 6,
+ "src/components/spot/PerpsTradingForm.tsx": 11,
+ "src/components/spot/SpotTradingForm.tsx": 12,
+ "src/components/spot/TradingPairDropdown.tsx": 10,
+ "src/components/spot/TradingPairModal.tsx": 10,
+ "src/components/spot/TradingViewChart.tsx": 14,
+ "src/i18n/dict.ts": 1,
+ "src/index.css": 59,
+ "src/lib/launch.ts": 7
+}

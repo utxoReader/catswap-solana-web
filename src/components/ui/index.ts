@@ -3,3 +3,5 @@ export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
 export { Input } from './Input';
 export { Modal } from './Modal';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
+export { Select } from './Select';
+export type { SelectOption } from './Select';

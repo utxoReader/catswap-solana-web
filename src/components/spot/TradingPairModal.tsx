@@ -8,6 +8,8 @@ interface TradingPairModalProps {
   onSelectPair: (pair: TradingPair) => void;
   currentPair: TradingPair;
   allPairs: TradingPair[];
+  /** Column label for the change stats — live pools report a rolling window. */
+  changeLabel?: string;
 }
 
 type TabType = 'favorites' | 'all' | 'top' | 'new';
@@ -44,6 +46,7 @@ export const TradingPairModal: React.FC<TradingPairModalProps> = ({
   onSelectPair,
   currentPair,
   allPairs,
+  changeLabel = '24h change',
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,6 +115,7 @@ export const TradingPairModal: React.FC<TradingPairModalProps> = ({
   const formatPrice = (price: number) => {
     if (price >= 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (price >= 1) return price.toFixed(2);
+    if (price > 0 && price < 0.01) return price.toPrecision(3); // tiny on-chain prices (~1e-11)
     return price.toFixed(4);
   };
 
@@ -191,7 +195,7 @@ export const TradingPairModal: React.FC<TradingPairModalProps> = ({
         <div className="grid grid-cols-[1fr_100px_80px] px-4 py-2 text-xs text-[var(--text-tertiary)] border-b border-[var(--border-primary)]">
           <span>Name</span>
           <span className="text-right">Last price</span>
-          <span className="text-right">24h change</span>
+          <span className="text-right">{changeLabel}</span>
         </div>
 
         {/* Pair List */}

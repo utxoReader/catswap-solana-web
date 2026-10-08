@@ -229,40 +229,64 @@ Semantic classes:
 
 ### Button Standards
 
-#### Primary Button (CTA)
+> **单一来源规矩（boss/K3 2026-09-19）**：按钮样式只准有一份定义，移动端复用桌面的同一组实测值，禁止分叉。改值 = 本节 + 下面全清单每一处同步，漏一处即分叉 bug（2026-09-19 已实测漏过两次：底部常驻条、桌面永续表单）。
+> **用色规矩（boss 2026-09-19 11:32）**：红绿只准用于买/卖、多/空语义（含开/平）。**其余一切按钮/开关/控件一律主题黑白**：`bg-[var(--text-primary)] text-[var(--bg-primary)]`（亮=黑底白字，暗=白底黑字），hover `opacity-90`。Margin 开关、杠杆选择、Connect Wallet 都属此类。
+> **引用组件全清单（枚举，别数错）**：
+> 1. 桌面表单：`src/components/spot/SpotTradingForm.tsx`
+> 2. 移动现货表单：`src/components/spot/MobileTradingForm.tsx`
+> 3. 移动永续表单：`src/components/spot/MobilePerpTradingForm.tsx`
+> 4. 现货页移动底部常驻条：`src/components/SpotTradingPage.tsx`（fixed bottom Buy/Sell）
+> 5. 永续页移动底部常驻条：`src/components/PerpsTradingPage.tsx`（fixed bottom Open/Close）
+> 6. 桌面永续表单：`src/components/spot/PerpsTradingForm.tsx`（2026-09-19 11:35 补漏登记——它被 PerpsTradingPage:157 真实渲染但第一批漏改，同日已对齐；教训再次验证：登记前先 grep 渲染链，不只 grep 已改文件）
+> （`src/components/trade/TradingFormPanel.tsx` 为死代码不在清单内；新增任何带交易按钮的组件时必须同步登记到本清单。）
+
+#### 交易胶囊（买/卖、开/平 tab）— 28px / 12px / 500 / 4px
+
+```tsx
+<button className="h-7 px-3 text-xs font-medium rounded transition-colors bg-[#25A750] text-white">Buy</button>
+<button className="h-7 px-3 text-xs font-medium rounded transition-colors bg-[#CA3F64] text-white">Sell</button>
+```
+
+**Properties:** 高 `h-7`(28px)；字 `text-xs`(12px) `font-medium`(500)；圆角 `rounded`(4px)；激活绿 `#25A750` / 激活红 `#CA3F64`（OKX 桌面红，**不是**币安红 #F6465D）；非激活 = `text-[var(--text-secondary)]`。
+
+#### 主 CTA（买入/做多/平仓）— 40px / 14px / 400 / 全胶囊
+
+Connect Wallet 不在此列：属非买卖语义，用黑白 CTA（见下方"黑白 CTA"）。
+
+```tsx
+<button className="w-full h-10 rounded-full text-sm font-normal bg-[#25A750] text-white hover:bg-[#25A750]/90 transition-colors">
+  Buy
+</button>
+<button className="w-full h-10 rounded-full text-sm font-normal bg-[#CA3F64] text-white hover:bg-[#CA3F64]/90 transition-colors">
+  Sell
+</button>
+```
+
+**Properties:** 高 `h-10`(40px)；字 `text-sm`(14px) `font-normal`(400)；`rounded-full`；hover = 90% 不透明度。
+
+#### 黑白 CTA（Connect Wallet 及一切非买卖语义按钮）— 40px / 14px / 400 / 全胶囊
+
+```tsx
+<button className="w-full h-10 rounded-full text-sm font-normal bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90 transition-opacity">
+  Connect Wallet
+</button>
+```
+
+**Properties:** 形状同主 CTA；颜色 = 主题反转（boss 2026-09-19 11:32 用色规矩）；hover `opacity-90 transition-opacity`。引用处：SpotTradingForm / MobileTradingForm / MobilePerpTradingForm / PerpsTradingForm 的 Connect Wallet；Header 顶栏同款语义。
+
+#### 订单类型 tab（限价/市价/TP-SL）— 35px / 12px / 500 / 透明底
+
+```tsx
+<button className="h-[35px] text-xs font-medium text-[var(--text-primary)]">Limit</button>
+```
+
+#### 其他工具按钮（Calculate 等次级）
 
 ```tsx
 <button className="px-4 py-3 rounded-full text-sm font-semibold bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90 transition-opacity">
   Calculate
 </button>
 ```
-
-**Properties:**
-- Background: `bg-[var(--text-primary)]` (inverted for high contrast)
-- Text: `text-[var(--bg-primary)]`
-- Border radius: `rounded-full` (pill shape for primary actions)
-- Font weight: `font-semibold`
-- Hover: `hover:opacity-90 transition-opacity`
-
-#### Action Buttons (Long/Short)
-
-```tsx
-// Long/Buy - Green
-<button className="py-3 rounded-full text-sm font-semibold bg-[#0ECB81] text-white hover:opacity-90 transition-opacity">
-  Long
-</button>
-
-// Short/Sell - Red  
-<button className="py-3 rounded-full text-sm font-semibold bg-[#F6465D] text-white hover:opacity-90 transition-opacity">
-  Short
-</button>
-```
-
-**Properties:**
-- Long/Buy: `bg-[#0ECB81] text-white`
-- Short/Sell: `bg-[#F6465D] text-white`
-- Border radius: `rounded-full`
-- Hover: `hover:opacity-90 transition-opacity`
 
 #### Secondary Button (Outline)
 
@@ -651,123 +675,30 @@ const handleNumberInput = (value: string, setter: (val: string) => void) => {
 
 ## Slider Standards
 
-### OKX-Style Slider
+### OKX-Style Slider（2026-09-19 全量重做版，实测规格）
 
-The slider component follows OKX's design with hollow circle marks and a dynamic thumb.
+> 单一来源规矩同样适用于滑动条：四个表单（SpotTradingForm / MobileTradingForm / MobilePerpTradingForm / PerpsTradingForm）共用同一实现；改值四处同步并登记。
 
-#### Visual Design
+#### 实测规格（OKX 现网，K3 无头直读 2026-09-19）
 
-```tsx
-<div className="py-1">
-  {/* mx-1.5 adds horizontal margin to contain the thumb */}
-  <div className="relative h-1 bg-[var(--bg-quaternary)] rounded-full mx-1.5">
-    {/* Progress bar - scaled to stay within bounds */}
-    <div
-      className="absolute h-full rounded-full bg-[var(--text-primary)]"
-      style={{ 
-        width: `calc(${sliderValue}% * 0.97 + 1.5%)`,
-        left: '0%'
-      }}
-    />
-    
-    {/* Custom Thumb - Smaller size (w-2 default, w-3 on hover) */}
-    <div
-      className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-[var(--bg-secondary)] border-2 border-[var(--text-primary)] pointer-events-none transition-all duration-100 ${
-        showSliderTooltip ? 'w-3 h-3' : 'w-2 h-2'
-      }`}
-      style={{ 
-        left: `calc(${sliderValue}% * 0.97 + 1.5% - ${showSliderTooltip ? 6 : 4}px)` 
-      }}
-    />
-    
-    {/* Input - expanded touch area, positioned to match visual */}
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value={sliderValue}
-      onChange={(e) => handleSliderChange(parseInt(e.target.value))}
-      onMouseDown={() => setShowSliderTooltip(true)}
-      onMouseUp={() => setShowSliderTooltip(false)}
-      onMouseEnter={() => setShowSliderTooltip(true)}
-      onMouseLeave={() => setShowSliderTooltip(false)}
-      onTouchStart={() => setShowSliderTooltip(true)}
-      onTouchEnd={() => setShowSliderTooltip(false)}
-      className="absolute -inset-x-1.5 -inset-y-2 w-[calc(100%+12px)] h-5 opacity-0 cursor-pointer"
-    />
-    
-    {/* Percentage Tooltip */}
-    {showSliderTooltip && (
-      <div
-        className="absolute -top-9 px-2 py-1 bg-[var(--bg-tooltip)] text-white text-xs font-medium rounded pointer-events-none"
-        style={{ left: `calc(${sliderValue}% * 0.97 + 1.5% - 16px)` }}
-      >
-        {Math.round(sliderValue)}%
-      </div>
-    )}
-    
-    {/* Slider marks - Smaller size (w-1.5) */}
-    <div className="absolute inset-x-0 flex justify-between items-center pointer-events-none">
-      {[0, 25, 50, 75, 100].map((pct) => (
-        <div
-          key={pct}
-          className={`w-1.5 h-1.5 rounded-full border transition-colors ${
-            sliderValue >= pct 
-              ? 'bg-[var(--text-primary)] border-[var(--text-primary)]' 
-              : 'bg-[var(--bg-secondary)] border-[var(--bg-quaternary)]'
-          }`}
-        />
-      ))}
-    </div>
-  </div>
-  
-  {/* Labels */}
-  <div className="flex justify-between mt-2">
-    {['0%', '25%', '50%', '75%', '100%'].map((label, idx) => (
-      <button
-        key={label}
-        onClick={() => handleSliderChange(idx * 25)}
-        className={`text-[10px] transition-colors ${
-          sliderValue >= idx * 25 ? 'text-[var(--text-primary)]' : 'text-[var(--text-tertiary)]'
-        }`}
-      >
-        {label}
-      </button>
-    ))}
-  </div>
-</div>
-```
+- **轨道**：2px 高（`h-[2px]`）、圆角 3px；亮色 `rgba(0,0,0,0.1)` 级浅灰、暗色 `rgba(255,255,255,0.13)`
+- **已填充段**：主题主色（亮=黑/暗=白，即 `var(--text-primary)`）——**黑白**，符合用色规矩
+- **节点圆点**：8×8（`w-2 h-2`）空心圆：白底 + 灰描边（`bg-white border-[var(--border-active)]`）；被越过的节点变实心主色；**可点击 = 精确跳到该档**
+- **拖拽手柄**：空心圆：`w-[9px] h-[9px]`（OKX 实测 9×9）、白底 + 1px 细主色描边；拖拽时最多放大到 11px；**禁止 transition 动画**——位置必须跟手零延迟（boss 11:46：滞后=transition 所致，已移除）
+- **Tooltip**：拖拽时手柄上方深色气泡实时显示百分比，`translateX(-50%)` 居中
+- **交互**：点轨道任意位置直接跳到该值；标签行 0%/25%/50%/75%/100% 可点击
+- **布局**：轨道容器 `mx-2`（给手柄溢出留位）；input range 用负 inset 扩大触摸区（`-inset-x-2 -inset-y-2.5 h-6 opacity-0`）盖在轨道上；节点层在 input 之上（DOM 后置）实现精确跳档
 
-#### Key Design Elements
+#### Why（boss 11:27 投诉的根因）
 
-| Element | Default State | Active/Drag State |
-|---------|---------------|-------------------|
-| **Track Background** | `bg-[var(--bg-quaternary)]` | - |
-| **Progress Bar** | `bg-[var(--text-primary)]` | - |
-| **Thumb** | `w-2 h-2` white circle, black border | `w-3 h-3` slightly larger |
-| **Mark (unfilled)** | Hollow circle: white bg, gray border | - |
-| **Mark (filled)** | Solid black circle | - |
-| **Tooltip** | Hidden | Shows percentage above thumb |
+旧版手柄（8px 实心）与节点（6px）视觉上几乎相同，用户分不清哪个可拖；轨道 4px 过厚不符合 OKX。新版手柄约为节点 3 倍大且空心，拖拽点一眼可辨。
 
 #### Boundary Handling
 
-To prevent the thumb from overflowing the track:
-
-1. **Add horizontal margin**: `mx-1.5` on the track container
-2. **Scale the progress bar**: Use `width: calc(${sliderValue}% * 0.97 + 1.5%)` instead of raw percentage
-3. **Adjust thumb position**: Position formula accounts for the scaling
-4. **Expand input touch area**: Use negative inset to make input wider than visual track
-
-#### Behavior
-
-1. **Thumb is always visible** - Unlike native sliders, the thumb is always shown
-2. **Thumb grows on interaction** - Mouse down/hover increases thumb size (w-2 → w-3)
-3. **Smaller thumb size** - Default `w-2 h-2` (8px) for cleaner look
-4. **Marks are hollow circles** - Unfilled marks have white center + gray border
-5. **Filled marks turn solid** - When slider passes a mark, it becomes solid black
-6. **Percentage tooltip** - Shows current value above thumb during interaction
-7. **Clickable labels** - 0%, 25%, 50%, 75%, 100% labels jump to those positions
-8. **No overflow** - Thumb stays within track bounds at 0% and 100%
+1. 轨道容器 `mx-2` 留出手柄溢出空间
+2. 位置公式 `calc(${sliderValue}% * 0.96 + 2%)` 让 0%/100% 时手柄中心对齐首尾节点
+3. 手柄用 `-translate-x-1/2 -translate-y-1/2` 自动居中（不手写像素偏移）
+4. input 触摸区负 inset 扩大，比视觉轨道更宽
 
 ---
 
@@ -789,3 +720,26 @@ To prevent the thumb from overflowing the track:
 We do not want a codebase that merely "looks like OKX today".
 
 We want a **design system** that can continue to look like OKX correctly as the product grows.
+
+---
+
+## 组件规范增补（2026-10-08，boss UI 一致性专项）
+
+### 双色族（刻意设计，勿"统一"）
+- **K线/涨跌语义**：`var(--color-buy)` #0ECB81 / `var(--color-sell)` #F6465D —— 蜡烛、涨跌百分比、多空标识；
+- **CTA 按钮激活态**：#25A750（Buy/Open）/ #CA3F64（Sell/Close）—— 与币安红绿**刻意不同**，两者不可互换。
+
+### 下拉面板（TradingPairDropdown 定型）
+- 圆角 `rounded-md`(6px)；阴影 ≤ `0 8px 20px -6px rgba(0,0,0,0.22)`；锚点**紧贴**触发器（零缝隙）；
+- hover 展开（asterdex 式），点击兜底；DOM 必须为触发器子节点（mouseleave 不误关）。
+
+### 页签（全站唯一风格）
+- 下划线式：`relative py-2`，选中 `font-medium` + 底部 `h-0.5` 横线（**文字宽度**，按钮无水平内边距），非选中 `text-tertiary` hover 提亮；
+- 禁用 pill 背景块页签（2026-10-06 起废止）。
+
+### 列表行
+- **无常驻选中底色**（含当前行）；hover 高亮 `bg-[var(--bg-primary)]`（此色为 hover 专用，禁作常驻底）；
+- 行内未知数据一律 "—" 占位，禁编造。
+
+### 数据面板圆角
+- 高密度数据面板（表格/图表/下拉）= `rounded-md`(6px) 上限；`rounded-xl`(12px) 仅营销/hero 卡片。

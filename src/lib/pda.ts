@@ -1,4 +1,14 @@
 import { PublicKey } from "@solana/web3.js";
+import idl from "../idl/catswap.json";
+
+/**
+ * Canonical on-chain program id. The vendored IDL's metadata.address is
+ * STALE (points at an ancient deployment), so an env override always wins:
+ * VITE_PROGRAM_ID — set it to the active validator/devnet deployment.
+ */
+export function resolveProgramId(): PublicKey {
+  return new PublicKey(import.meta.env.VITE_PROGRAM_ID || (idl as any).metadata.address);
+}
 
 /**
  * Shared PDA derivation utilities for the Catswap program.

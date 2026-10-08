@@ -1,12 +1,17 @@
+import { useEffect } from "react";
 import { Navigate, Outlet, Route, Routes, useLocation, useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import { Header } from "./components/Header";
 import { SpotTradingPage } from "./components/SpotTradingPage";
 import { PerpsTradingPage } from "./components/PerpsTradingPage";
+import { OptionsPage } from "./components/OptionsPage";
 import { PoolsPage } from "./components/PoolsPage";
 import { ReferralPage } from "./components/ReferralPage";
+import { LandingPage } from "./components/LandingPage";
+import { LaunchPage } from "./pages/LaunchPage";
 import { DepositWithdraw } from "./components/DepositWithdraw";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { usePageMeta } from "./hooks/usePageMeta";
 import { AppPage, getPageKeyFromPath, getPagePath } from "./seo/routeMeta";
 
@@ -30,11 +35,33 @@ const AppLayout = () => {
   const currentPage = getPageKeyFromPath(location.pathname);
   const selectedPair = searchParams.get("pair") ?? undefined;
   const { connected, publicKey } = useWallet();
+  const { setVisible } = useWalletModal();
+
+  // Same wallet-picker modal as the header button (Jupiter-style, supports all registered wallets)
+  const connectWallet = () => setVisible(true);
 
   const handleNavigateToTrade = (pair: string, type: "spot" | "perp") => {
     const pathname = type === "spot" ? getPagePath("spot") : getPagePath("perps");
     navigate(`${pathname}${createTradeSearch(pair)}`);
   };
+
+  // Homepage is pinned dark (OKX-style) regardless of the visitor's theme;
+  // restore their saved/system theme when navigating away. Only the DOM
+  // attribute is touched — the saved preference in localStorage is not.
+  useEffect(() => {
+    if (currentPage !== "home") return;
+    document.documentElement.setAttribute("data-theme", "dark");
+    return () => {
+      const saved = window.localStorage.getItem("theme");
+      const restored =
+        saved === "light" || saved === "dark"
+          ? saved
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+      document.documentElement.setAttribute("data-theme", restored);
+    };
+  }, [currentPage]);
 
   const handlePageChange = (page: AppPage) => {
     const nextPath = getPagePath(page);
@@ -54,7 +81,7 @@ const AppLayout = () => {
           context={{
             connected,
             publicKey: publicKey?.toString() ?? null,
-            connectWallet: () => {},
+            connectWallet,
             navigateToTrade: handleNavigateToTrade,
             selectedPair,
           }}
@@ -78,6 +105,11 @@ const SpotRoute = () => {
       connectWallet={connectWallet}
     />
   );
+};
+
+const OptionsRoute = () => {
+  usePageMeta("options");
+  return <OptionsPage />;
 };
 
 const PerpsRoute = () => {
@@ -119,14 +151,26 @@ const PortfolioRoute = () => {
   );
 };
 
+const HomeRoute = () => {
+  usePageMeta("home");
+  return <LandingPage />;
+};
+
+const LaunchRoute = () => {
+  return <LaunchPage />;
+};
+
 export function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<SpotRoute />} />
+        <Route index element={<HomeRoute />} />
+        <Route path="trade" element={<SpotRoute />} />
+        <Route path="options" element={<OptionsRoute />} />
         <Route path="perps" element={<PerpsRoute />} />
         <Route path="pools" element={<PoolsRoute />} />
         <Route path="referral" element={<ReferralRoute />} />
+        <Route path="launch" element={<LaunchRoute />} />
         <Route path="portfolio" element={<PortfolioRoute />} />
         <Route path="session" element={<Navigate replace to="/" />} />
         <Route path="*" element={<Navigate replace to="/" />} />

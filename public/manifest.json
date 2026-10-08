@@ -1,7 +1,7 @@
 {
   "short_name": "CatSwap",
-  "name": "CatSwap Bitcoin L2 DEX",
-  "description": "Trade spot markets, perpetuals, and liquidity pools on CatSwap.",
+  "name": "CatSwap — Fair Launchpad & Unified Trading on Solana",
+  "description": "Fair launchpad and unified trading protocol on Solana — spot, margin, and perpetuals in one pool, built for stock tokens.",
   "icons": [
     {
       "src": "header_icon.svg",

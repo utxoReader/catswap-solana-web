@@ -4,6 +4,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { AppPage, getPagePath } from "../seo/routeMeta";
 import { useTheme } from "../hooks/useTheme";
+import { useLang } from "../i18n/LangContext";
 
 /** Solana 3-bar mark (official gradient). */
 const SolanaMark: React.FC<{ className?: string }> = ({ className }) => (
@@ -27,11 +28,14 @@ interface HeaderProps {
   onToggleTheme?: () => void;
 }
 
-const navItems: { id: AppPage; label: string }[] = [
-  { id: "spot", label: "Spot" },
-  { id: "perps", label: "Perps" },
-  { id: "pools", label: "Pools" },
-  { id: "referral", label: "Referral" },
+const navItems: { id: AppPage; labelKey: string }[] = [
+  { id: "spot", labelKey: "nav.spot" },
+  { id: "perps", labelKey: "nav.perps" },
+  // Options entry hidden for the hackathon demo (boss: v1 ships without
+  // options — the route/page still exists, just not in the nav).
+  { id: "pools", labelKey: "nav.pools" },
+  { id: "launch", labelKey: "nav.launch" },
+  { id: "referral", labelKey: "nav.referral" },
 ];
 
 /** Reference design (CatSwapService/packages/frontend Header) wired to
@@ -43,6 +47,7 @@ export const Header: React.FC<HeaderProps> = ({
   onPageChange,
 }) => {
   const { isDark, toggleTheme } = useTheme();
+  const { lang, toggleLang, t } = useLang();
   const { connection } = useConnection();
   const { publicKey, connected, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
@@ -111,27 +116,33 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const address = publicKey?.toBase58() ?? "";
-  const theme = isDark ? "dark" : "light";
+  const isHome = currentPage === "home";
+  // boss 9/19：homepage 默认暗黑、无主题切换——landing 页 header 恒深色并隐藏 toggle
+  const theme = isHome || isDark ? "dark" : "light";
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-[var(--bg-secondary)] border-b border-[var(--border-primary)]">
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
+        isHome
+          ? "bg-[#0B0E11] border-b border-white/10"
+          : "bg-[var(--bg-secondary)] border-b border-[var(--border-primary)]"
+      }`}>
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-10 sm:h-11 flex items-center justify-between">
             {/* Logo & Brand */}
             <div className="flex items-center gap-8">
               <a
-                href={getPagePath("spot")}
+                href={getPagePath("home")}
                 className="flex items-center cursor-pointer group"
                 onClick={(event) => {
                   event.preventDefault();
-                  if (currentPage === "spot") return;
-                  onPageChange("spot");
+                  if (currentPage === "home") return;
+                  onPageChange("home");
                 }}
               >
-                {/* Logo - 根据主题切换 */}
+                {/* Logo - 根据主题切换（homepage 恒定深色） */}
                 <img
-                  src={theme === "dark" ? "/logo_dark.svg" : "/logo_light.svg"}
+                  src={currentPage === "home" || theme === "dark" ? "/logo_dark.svg" : "/logo_light.svg"}
                   alt="CatSwap"
                   className="h-[26px] w-auto"
                 />
@@ -154,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
                         : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                     }`}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                     {currentPage === item.id && (
                       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[var(--text-primary)] rounded-full" />
                     )}
@@ -165,18 +176,31 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Right Section */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Theme Toggle */}
+              {/* Language Toggle（中 / EN，当前语言高亮） */}
               <button
-                onClick={toggleTheme}
-                className="p-2 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
-                aria-label={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                onClick={toggleLang}
+                className="px-2 py-1.5 rounded-md text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
+                aria-label="Switch language / 切换语言"
               >
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
+                <span className={lang === "zh" ? "text-[var(--text-primary)]" : ""}>中</span>
+                <span className="mx-0.5 text-[var(--text-tertiary)]">/</span>
+                <span className={lang === "en" ? "text-[var(--text-primary)]" : ""}>EN</span>
               </button>
+
+              {/* Theme Toggle（homepage 恒定深色，不提供切换） */}
+              {currentPage !== "home" && (
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-all duration-200"
+                  aria-label={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="w-4 h-4" />
+                  ) : (
+                    <Moon className="w-4 h-4" />
+                  )}
+                </button>
+              )}
 
               {/* Wallet Section (reference look, wallet-adapter wiring) */}
               {connected && publicKey ? (
@@ -269,7 +293,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : "text-[var(--text-secondary)]"
             }`}
           >
-            {item.label}
+            {t(item.labelKey)}
           </a>
         ))}
       </nav>
