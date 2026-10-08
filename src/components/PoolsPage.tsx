@@ -38,12 +38,12 @@ const TOKEN_COLORS: Record<string, string> = {
 };
 
 const POOLS: Pool[] = [
-  { id: '1', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 90.49, apr7d: 90.49, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
-  { id: '2', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 50.88, apr7d: 50.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '3', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 8.56, apr7d: 8.56, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '4', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 20.88, apr7d: 20.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: false },
-  { id: '5', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: 100, volume24h: 50780000, fee24h: 10.88, apr7d: 10.88, feeTier: '0.5% / 50%', hasPosition: false, hasFees: false },
-  { id: '6', tokenA: 'ETH', tokenB: 'USDC', tvl: 32400000, providers: 85, volume24h: 32400000, fee24h: 15.23, apr7d: 15.23, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
+  { id: '1', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 90.49, apr7d: 90.49, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
+  { id: '2', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 50.88, apr7d: 50.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
+  { id: '3', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 8.56, apr7d: 8.56, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
+  { id: '4', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 20.88, apr7d: 20.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: false },
+  { id: '5', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 10.88, apr7d: 10.88, feeTier: '0.5% / 50%', hasPosition: false, hasFees: false },
+  { id: '6', tokenA: 'ETH', tokenB: 'USDC', tvl: 32400000, providers: null, volume24h: 32400000, fee24h: 15.23, apr7d: 15.23, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
 ];
 
 const formatCurrency = (value: number | null) => {
@@ -483,7 +483,11 @@ const PoolRow: React.FC<PoolRowProps> = ({ pool, onDeposit, onRemove, onClaim, o
     <div className="text-right">
       {pool.vaultA !== undefined && pool.vaultA !== null ? (
         <>
+          {/* Layout per boss 16:27 ref: TVL on top, both token amounts below */}
           <div className="text-sm font-medium text-[var(--text-primary)]">
+            {formatCurrency(pool.tvl)}
+          </div>
+          <div className="text-xs text-[var(--text-tertiary)]">
             {pool.vaultA >= 1e9
               ? `${(pool.vaultA / 1e9).toFixed(2)}B`
               : pool.vaultA >= 1e6
@@ -494,7 +498,6 @@ const PoolRow: React.FC<PoolRowProps> = ({ pool, onDeposit, onRemove, onClaim, o
           </div>
           <div className="text-xs text-[var(--text-tertiary)]">
             {(pool.vaultB ?? 0).toLocaleString('en-US', { maximumFractionDigits: 4 })} {pool.tokenB}
-            {pool.tvl !== null ? ` · ${formatCurrency(pool.tvl)}` : ''}
           </div>
         </>
       ) : (
