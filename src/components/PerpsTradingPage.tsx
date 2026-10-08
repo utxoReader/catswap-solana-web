@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Star, ChevronDown } from 'lucide-react';
 import { TradingPair } from '../types';
-import { tradingPairs, generateCandleData } from '../data/mockData';
+import { tradingPairs } from '../data/mockData';
 import { TradingViewChart, PerpsTradingForm, OrdersPanel, MobilePerpTradingForm } from './spot';
 import { TradingPairDropdown, PairRow } from './spot/TradingPairDropdown';
 import { useDemoPoolKlines } from '../hooks/useDemoPoolKlines';
@@ -34,7 +34,7 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
   connectWallet,
   selectedPair: initialPair = 'BTC/USDC',
 }) => {
-  const [selectedPair, setSelectedPair] = useState<TradingPair>(() => {
+  const [, setSelectedPair] = useState<TradingPair>(() => {
     const found = tradingPairs.find(p => p.symbol === initialPair);
     return found || tradingPairs[0];
   });
@@ -59,13 +59,11 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
   const [activePoolKey, setActivePoolKey] = useState<string>(DEMO_POOLS[1].key);
   const activePoolIdx = Math.max(0, DEMO_POOLS.findIndex(c => c.key === activePoolKey));
   const activeKline = poolKlines[activePoolIdx];
-  const { candles: liveCandles, isLive, settled } = activeKline;
+  const { candles: liveCandles, isLive } = activeKline;
 
-  const mockCandleData = useMemo(() => generateCandleData(selectedPair.price), [selectedPair]);
-  // Mock fallback ONLY after the first fetch settled with no live data —
-  // otherwise hard refresh flashes mock BTC before the RPC responds.
-  const showMock = settled && !isLive;
-  const candleData = isLive && liveCandles.length > 0 ? liveCandles : (showMock ? mockCandleData : []);
+  // No mock candles anywhere (boss 10/08): chart shows real on-chain data or
+  // an honest empty chart — never fabricated BTC history.
+  const candleData = isLive && liveCandles.length > 0 ? liveCandles : [];
 
   // Live-pool header stats (same contract as the spot page).
   const liveStats = useMemo(() => {
@@ -90,9 +88,9 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
   const getTokenIcon = (symbol: string) => TOKEN_ICONS[symbol.split('/')[0]] || symbol[0];
   const getTokenColor = (symbol: string) => TOKEN_COLORS[symbol.split('/')[0]] || '#888';
 
-  const pairSymbol = showMock ? selectedPair.symbol : DEMO_POOLS[activePoolIdx].symbol;
+  const pairSymbol = DEMO_POOLS[activePoolIdx].symbol;
   const quoteToken = pairSymbol.split('/')[1] || 'USDC';
-  const dispChange = liveStats ? liveStats.change : showMock ? selectedPair.change24h : null;
+  const dispChange = liveStats ? liveStats.change : null;
   const priceChangeColor = dispChange === null ? 'text-[var(--text-primary)]' : dispChange >= 0 ? 'text-[#0ECB81]' : 'text-[#F6465D]';
   const priceChangeSign = dispChange !== null && dispChange >= 0 ? '+' : '';
 
@@ -106,7 +104,12 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
   };
 
   const currentPair: TradingPair =
-    livePairs?.find(p => p.id === activePoolKey) ?? selectedPair;
+    livePairs?.find(p => p.id === activePoolKey) ?? {
+      id: DEMO_POOLS[activePoolIdx].key,
+      symbol: DEMO_POOLS[activePoolIdx].symbol,
+      name: DEMO_POOLS[activePoolIdx].name,
+      price: 0, change24h: 0, volume24h: 0, high24h: 0, low24h: 0,
+    };
 
   return (
     <div className="h-[calc(100vh-68px)] bg-[var(--bg-primary)] flex flex-col gap-px lg:gap-[3px]">
@@ -148,7 +151,7 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
               </button>
               {isModalOpen && pairAnchor && (
                 <TradingPairDropdown
-                  pairs={(livePairs ?? tradingPairs) as PairRow[]}
+                  pairs={(livePairs ?? []) as PairRow[]}
                   currentPair={currentPair}
                   onSelectPair={handleSelectPair}
                   changeLabel={livePairs ? 'Change (win)' : undefined}
@@ -170,7 +173,7 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
               {/* Price Info - 两行显示 */}
               <div className="flex flex-col shrink-0">
                 <span className={`text-lg font-bold ${priceChangeColor}`}>
-                  {liveStats ? fmtAny(liveStats.price) : showMock ? formatPrice(selectedPair.price) : '—'}
+                  {liveStats ? fmtAny(liveStats.price) : '—'}
                 </span>
                 <span className={`text-xs ${priceChangeColor}`}>
                   {dispChange === null ? '—' : `${priceChangeSign}${dispChange.toFixed(2)}%`}
@@ -180,19 +183,19 @@ export const PerpsTradingPage: React.FC<PerpsTradingPageProps> = ({
               {/* Stats - 两行显示 */}
               <div className="hidden md:flex items-center gap-4 text-xs">
                 <div className="flex flex-col">
-                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'High (win)' : showMock ? '24h High' : 'High'}</span>
-                  <span className="text-[var(--text-primary)] font-medium">{liveStats ? fmtAny(liveStats.high) : showMock ? formatPrice(selectedPair.high24h) : '—'}</span>
+                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'High (win)' : 'High'}</span>
+                  <span className="text-[var(--text-primary)] font-medium">{liveStats ? fmtAny(liveStats.high) : '—'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'Low (win)' : showMock ? '24h Low' : 'Low'}</span>
-                  <span className="text-[var(--text-primary)] font-medium">{liveStats ? fmtAny(liveStats.low) : showMock ? formatPrice(selectedPair.low24h) : '—'}</span>
+                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'Low (win)' : 'Low'}</span>
+                  <span className="text-[var(--text-primary)] font-medium">{liveStats ? fmtAny(liveStats.low) : '—'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'Vol (win)' : showMock ? '24h Vol' : 'Vol'}</span>
+                  <span className="text-[var(--text-tertiary)]">{liveStats ? 'Vol (win)' : 'Vol'}</span>
                   <span className="text-[var(--text-primary)] font-medium">
                     {liveStats
                       ? `${liveStats.vol < 1 ? liveStats.vol.toPrecision(3) : liveStats.vol.toFixed(2)} ${quoteToken}`
-                      : showMock ? `${(selectedPair.volume24h / 1e9).toFixed(2)}B ${quoteToken}` : '—'}
+                      : '—'}
                   </span>
                 </div>
                 {/* Funding/Countdown are mock constants — hide them while the

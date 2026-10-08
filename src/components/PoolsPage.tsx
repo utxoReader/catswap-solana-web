@@ -37,14 +37,6 @@ const TOKEN_COLORS: Record<string, string> = {
   USDC: '#2775CA',
 };
 
-const POOLS: Pool[] = [
-  { id: '1', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 90.49, apr7d: 90.49, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
-  { id: '2', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 50.88, apr7d: 50.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '3', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 8.56, apr7d: 8.56, feeTier: '0.5% / 50%', hasPosition: true, hasFees: true },
-  { id: '4', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 20.88, apr7d: 20.88, feeTier: '0.5% / 50%', hasPosition: true, hasFees: false },
-  { id: '5', tokenA: 'BTC', tokenB: 'USDC', tvl: 50780000, providers: null, volume24h: 50780000, fee24h: 10.88, apr7d: 10.88, feeTier: '0.5% / 50%', hasPosition: false, hasFees: false },
-  { id: '6', tokenA: 'ETH', tokenB: 'USDC', tvl: 32400000, providers: null, volume24h: 32400000, fee24h: 15.23, apr7d: 15.23, feeTier: '0.08% / 10%', hasPosition: true, hasFees: true },
-];
 
 const formatCurrency = (value: number | null) => {
   if (value === null) return '—'; // unknown is never fabricated
@@ -609,7 +601,8 @@ export const PoolsPage: React.FC<PoolsPageProps> = ({ onNavigateToTrade, connect
         };
       });
     }
-    return POOLS;
+    // No mock pools (boss 10/08): unknown chain state = honest empty list.
+    return [];
   }, [livePairs, vaults]);
 
   const filteredPools = displayPools.filter(pool =>
@@ -666,22 +659,22 @@ export const PoolsPage: React.FC<PoolsPageProps> = ({ onNavigateToTrade, connect
                       ? displayPools.reduce((sum, p) => sum + (p.tvl ?? 0), 0)
                       : null
                   )
-                : "$606.00M"
+                : '—'
             }
           />
           <StatCard
             icon={<BarChart3 className="w-4 h-4" />}
-            label={livePairs ? 'Volume (win)' : '24h Volume'}
+            label={'Volume (win)'}
             value={
               livePairs
                 ? formatCurrency(displayPools.reduce((sum, p) => sum + (p.volume24h ?? 0), 0))
-                : "$195.90M"
+                : '—'
             }
           />
           <StatCard
             icon={<TrendingUp className="w-4 h-4" />}
             label="24h Fees"
-            value={livePairs ? '—' : "$587.70K"}
+            value={'—'}
           />
         </div>
 
