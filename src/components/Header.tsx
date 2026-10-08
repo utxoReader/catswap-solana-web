@@ -33,8 +33,9 @@ const navItems: { id: AppPage; labelKey: string }[] = [
   { id: "perps", labelKey: "nav.perps" },
   // Options entry hidden for the hackathon demo (boss: v1 ships without
   // options — the route/page still exists, just not in the nav).
+  // Launch entry hidden (boss 2026-10-08: meme launch paused, focus on the
+  // core protocol; the /launch route/page still exists).
   { id: "pools", labelKey: "nav.pools" },
-  { id: "launch", labelKey: "nav.launch" },
   { id: "referral", labelKey: "nav.referral" },
 ];
 

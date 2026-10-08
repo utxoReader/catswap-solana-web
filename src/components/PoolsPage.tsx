@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Search, TrendingUp, DollarSign, BarChart3, ChevronDown, X } from 'lucide-react';
+import { Search, TrendingUp, DollarSign, BarChart3, ChevronDown, X } from 'lucide-react';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { ClaimFeesModal } from './ClaimFeesModal';
@@ -566,7 +565,6 @@ interface PoolsPageProps {
 }
 
 export const PoolsPage: React.FC<PoolsPageProps> = ({ onNavigateToTrade, connected = false }) => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'all' | 'my'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [depositModalOpen, setDepositModalOpen] = useState(false);
@@ -649,14 +647,8 @@ export const PoolsPage: React.FC<PoolsPageProps> = ({ onNavigateToTrade, connect
               Provide liquidity and earn trading fees
             </p>
           </div>
-          {/* New Pool = the permissionless launch flow (/launch) */}
-          <button
-            onClick={() => navigate('/launch')}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-[var(--text-primary)] text-[var(--bg-primary)] font-medium text-sm hover:opacity-90 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            New Pool
-          </button>
+          {/* New Pool hidden — meme launch paused (boss 2026-10-08: focus on
+              the core protocol; the /launch route still exists). */}
         </div>
 
         {/* Stats */}
