@@ -1,8 +1,9 @@
 // Demo pools launched on the local rehearsal validator (scripts/devnet
 // bootstrap). On devnet these get replaced by the deployed equivalents —
 // same shape, different addresses.
-// Addresses = .state.json after the 2026-10-09 validator rebuild (114GB
-// shred-cap surgery — old ledger discarded, all pools re-launched).
+// Addresses = .state.json v3 (2026-10-09): validator rebuilt with a 1M-shred
+// cap and the program redeployed from main=279183d4 (#251 exec legs + ema45s
+// anchor are LIVE in the demo data).
 export interface DemoPoolConfig {
   key: string; // 'meme' | 'stock' | 'chop'
   symbol: string; // display pair
@@ -17,17 +18,17 @@ export interface DemoPoolConfig {
 }
 
 /** Demo USDC mint (faucet — we hold mint authority on the rehearsal validator). */
-export const DEMO_USDC_MINT = '29S2niwzojDGTNSfRTAyu6xbsXPK5Nn45kMQd5AYpVY7';
+export const DEMO_USDC_MINT = 'A4sbXoBhEPNDXZ3YsETqdni7ZtQWGcJCTBj7Jap2UP4H';
 
 export const DEMO_POOLS: DemoPoolConfig[] = [
   {
     key: 'meme',
     symbol: 'MEME/USDC',
     name: 'Demo Meme (fair launch)',
-    pool: '7Lhrisns2A55Fv2YmaVxEH9hxNLU52CgJn2hcwRXmzjx',
-    token0Vault: '5f1KtCWWAUbD6P8SWFFbtd3TAJaWdXfjZmTwXCb7nunG',
-    token1Vault: '4r9KAknvgWpBCnK8tgUqa9FUHouzotLRaQ8QN4kaShV2',
-    token0Mint: 'EUNYyaspkFRpJ9KVc2ytZRQJXhaNr4g8nE9ZdL5RQeTy',
+    pool: 'H8SEEyEvLPb2H2YLU25x8MoJFDgTyNik2KoRdkG9Po1q',
+    token0Vault: 'DBHqE5K1EvZFL9ZnUchp81dQUFG4bHVyDmpe9D6SAxu9',
+    token1Vault: '5EGZ2CNk7AczGujxAPkbA91S9ZHDKh29AnRR8gGh5t4C',
+    token0Mint: 'CTcFAkVxJxhGav3sLJDpqVtpVF3ZavTwpdGebZnAewDE',
     token1Mint: DEMO_USDC_MINT,
     perpEligible: false, // launch pool — perp off by design
   },
@@ -35,10 +36,10 @@ export const DEMO_POOLS: DemoPoolConfig[] = [
     key: 'stock',
     symbol: 'STOCK/USDC',
     name: 'Demo Stock Token',
-    pool: 'DHy9bAuZFfmHkZjQfzdKgCECpe9tg6X8UHRNQHKFDUwL',
-    token0Vault: '2cagrzfWEREG7pkFmTjkYfCzMhMu9Ydr2NVdy3qDEei1',
-    token1Vault: '2vGhenHrxnTT3iT1FGTMeQHCPNZxRqCk6NdX32dFucWJ',
-    token0Mint: '2Rk6bWvZ5UApT55EojBq4yfG2iUD357xLGqgBmrRAm69',
+    pool: 'Fubgdc6HTB43SCDpg3t1yh69TrEREGMnUz2yCBe1x9U7',
+    token0Vault: 'G5CF1Kq56FKCN4HksA17jDBmSd5LR7sHJPqQe1b1xNQk',
+    token1Vault: 'EUKtD3tvBBZZgQcCEC6BiwXZ7Cj7ferFRgETGXngZTdA',
+    token0Mint: '5Rw9obyYcKLyuihda6J63idWhkcdvA5DVMA8pVmW2EzT',
     token1Mint: DEMO_USDC_MINT,
     perpEligible: true,
   },
@@ -46,10 +47,10 @@ export const DEMO_POOLS: DemoPoolConfig[] = [
     key: 'chop',
     symbol: 'CHOP/USDC',
     name: 'Demo Sideways',
-    pool: '5uz8znRK2jRx83LrFi4KwtH9Yr36akfrmFf79CgjmVgH',
-    token0Vault: '2ESspxpbV3S4p8YEwz56KFp9vPDXJ4CpyYXunyZPCSjm',
-    token1Vault: 'G5vtK32mGa6gwpZeaJNevn5VHboW3fS88QrdfWkXaDvG',
-    token0Mint: 'Btg6meVshdeAWsCDhFehEZxTgUriCdQsqZNgPkxL1YYK',
+    pool: 'AueGx6LUaVqeiHaHoYWvV1eWaMfC4rfULYn9REswUUhx',
+    token0Vault: '99DeGEt5bbFc2FQ7a3PFvb7EtQ1ppfhF51HfKDQse95F',
+    token1Vault: 'G8xJDbpdmMTkHbKi4oTzwtknN74tZG2g88W5zMBRbsZC',
+    token0Mint: 'BKk2o6q82JSrgrtYZnytNoWNvib916Hwjm7xoXEDoJGU',
     token1Mint: DEMO_USDC_MINT,
     perpEligible: true,
   },
