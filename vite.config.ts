@@ -42,6 +42,16 @@ export default defineConfig(({ isSsrBuild }) => ({
   server: {
     port: 3000,
     host: true,
+    proxy: {
+      // Dev-only RPC proxy: keeps Solana RPC calls same-origin so the
+      // connect-src 'self' CSP above doesn't block the local validator.
+      // Use VITE_RPC_URL=/rpc when developing against a local validator.
+      '/rpc': {
+        target: process.env.VITE_RPC_TARGET || 'http://127.0.0.1:18999',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/rpc/, ''),
+      },
+    },
   },
   preview: {
     port: 5001,
